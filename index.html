@@ -15,7 +15,21 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
+<meta property="og:site_name" content="ISEZAKI YOTARO — /HAL/">
 <meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "伊勢崎 陽太郎",
+  "alternateName": "ISEZAKI YOTARO",
+  "jobTitle": "Ceramic Artist",
+  "url": "https://yotaro2121.github.io/hal-site/",
+  "sameAs": ["https://www.instagram.com/youtarou21/"],
+  "address": { "@type": "PostalAddress", "addressLocality": "多治見市", "addressRegion": "岐阜県", "addressCountry": "JP" },
+  "knowsAbout": ["ceramic art", "overglaze transfer", "AI generated imagery"]
+}
+</script>
 <link rel="preload" href="assets/fonts/zen-kaku-900-hero-subset.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/hero-2x.jpg" as="image" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -108,6 +122,8 @@
   nav a{color:var(--muted);text-decoration:none;white-space:nowrap;transition:color .2s}
   nav a:hover{color:var(--ink)}
   nav a i{font-style:normal;color:var(--accent);margin-right:6px}
+  nav a.cur{color:var(--ink)}
+  nav a.cur i{text-shadow:0 0 8px rgba(200,69,43,.8)}
 
   /* ---------- hero ---------- */
   .hero{position:relative;z-index:1;display:grid;grid-template-columns:minmax(340px,46fr) minmax(320px,54fr);min-height:calc(100vh - 60px)}
@@ -426,7 +442,7 @@
     </div>
   </footer>
 
-  <script src="assets/works-data.js"></script>
+  <script src="assets/works-data.js?v=2"></script>
   <script>
     // ---- WORKS: assets/works-data.js から描画(admin.html で編集可能) ----
     (function(){
@@ -453,8 +469,15 @@
       });
     })();
 
-    // ---- Color DNA switcher ----
-    var DNA = [
+    // ---- HERO: 表示位置を works-data.js から適用(admin.html で調整可能) ----
+    if (window.SITE && window.SITE.hero && window.SITE.hero.pos) {
+      var heroImgEl = document.querySelector('.hero-fig img');
+      if (heroImgEl) heroImgEl.style.objectPosition = window.SITE.hero.pos;
+    }
+
+    // ---- Color DNA switcher(データは works-data.js の SITE.dna / admin.html で編集可能) ----
+    // フォールバックは旧キャッシュ遷移対策(works-data.js が旧形式でも5色表示を維持)
+    var DNA = (window.SITE && window.SITE.dna && window.SITE.dna.length) ? window.SITE.dna : [
       { kanji:'赤', code:'HAL_01 / 緋', img:'assets/isezaki_IY_28_2.jpg', color:'#C8452B', pos:'center 62%' },
       { kanji:'緑', code:'HAL_02 / 翠', img:'assets/isezaki_IY_32_2.jpg', color:'#4E8A5E', pos:'center 42%' },
       { kanji:'紫', code:'HAL_03 / 菫', img:'assets/isezaki_IY_9_2.jpg',  color:'#7A68B5', pos:'center 55%' },
@@ -491,6 +514,14 @@
       chipsEl.appendChild(b);
     });
 
+    // 初期表示を DNA[0] に同期(アニメーションなしの静的セット)
+    (function(){
+      var d = DNA[0];
+      img.src = d.img; img.alt = 'HAL ' + d.kanji; img.style.objectPosition = d.pos || 'center 50%';
+      kanji.textContent = d.kanji; kanji.style.color = d.color;
+      code.textContent = d.code; stageCode.textContent = 'SPECIMEN // ' + d.code;
+    })();
+
     // ---- scroll reveal ----
     if ('IntersectionObserver' in window) {
       document.documentElement.classList.add('js');
@@ -514,6 +545,24 @@
           el.style.transitionDelay = Math.min(i * 70, 280) + 'ms';
           io.observe(el);
         });
+      });
+    }
+
+    // ---- scrollspy: 現在のセクションをナビに反映 ----
+    if ('IntersectionObserver' in window) {
+      var navLinks = {};
+      document.querySelectorAll('nav a[href^="#"]').forEach(function(a){ navLinks[a.getAttribute('href').slice(1)] = a; });
+      var spy = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if (!e.isIntersecting) return;
+          var id = e.target.id;
+          if (!navLinks[id]) return;
+          Object.keys(navLinks).forEach(function(k){ navLinks[k].classList.toggle('cur', k === id); });
+        });
+      }, { rootMargin: '-40% 0px -55% 0px' });
+      ['works','dna','statement','exhibitions','profile','contact'].forEach(function(id){
+        var el = document.getElementById(id);
+        if (el) spy.observe(el);
       });
     }
 
