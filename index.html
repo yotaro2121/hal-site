@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ISEZAKI YOTARO — /HAL/ IMAGES, FIRED</title>
+<meta name="description" content="画像を、焼く。陶芸家・伊勢崎陽太郎。AIが生成したイメージをオーバーグレーズ転写で陶に焼き付け、二度と再生成できない一点物にする——/HAL/ IMAGES, FIRED.">
+<meta name="theme-color" content="#0B0A09">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<!-- OGP: og:image / og:url は公開ドメイン決定後に絶対URLへ差し替えること -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="ISEZAKI YOTARO — /HAL/ IMAGES, FIRED">
+<meta property="og:description" content="画像を、焼く。AIが生成したイメージを陶に焼き付け、二度と再生成できない一点物にする。陶芸家・伊勢崎陽太郎のアーカイブ。">
+<meta property="og:image" content="assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="assets/fonts/zen-kaku-900-hero-subset.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/hero-2x.jpg" as="image" fetchpriority="high">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ヒーロー見出し7グリフのみの自己ホスト・サブセット(1.9KB)。
+     Google Fonts本体より後に宣言することで該当グリフはこちらが優先され、
+     回線状態に関わらず見出しが即座に正しい書体で立ち上がる */
+  @font-face{
+    font-family:'Zen Kaku Gothic New';
+    font-style:normal;
+    font-weight:900;
+    font-display:block;
+    src:url('assets/fonts/zen-kaku-900-hero-subset.woff2') format('woff2');
+    unicode-range:U+3001-3002,U+304F,U+3092,U+50CF,U+713C,U+753B;
+  }
+  :root{
+    --bg:#0B0A09;
+    --panel:#151210;
+    --panel-2:#100E0C;
+    --ink:#EDE6D8;
+    --ink-2:#CFC7B8;
+    --muted:#B8AE9C;
+    --muted-2:#8A8478;
+    --accent:#C8452B;
+    --violet:#7A68B5;
+    --line:rgba(237,230,216,.12);
+    --line-soft:rgba(237,230,216,.08);
+    --sans:'Zen Kaku Gothic New',sans-serif;
+    --mono:'IBM Plex Mono',monospace;
+    --max:1440px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);overflow-x:clip;position:relative}
+  ::selection{background:var(--accent);color:var(--bg)}
+  a{color:inherit}
+  img{display:block}
+
+  /* ---------- atmosphere ---------- */
+  .grid-bg{position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:linear-gradient(rgba(237,230,216,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(237,230,216,.035) 1px,transparent 1px);
+    background-size:120px 120px}
+  .rain{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .rain span{position:absolute;top:0;writing-mode:vertical-rl;font-family:var(--mono);font-size:11px;letter-spacing:.5em;white-space:nowrap;color:rgba(237,230,216,.05);animation:rainFall 32s linear infinite}
+  .rain span:nth-child(1){left:6%}
+  .rain span:nth-child(2){left:47%;color:rgba(237,230,216,.04);animation-duration:41s;animation-direction:reverse}
+  .rain span:nth-child(3){right:3%;color:rgba(122,104,181,.07);animation-duration:36s}
+  .flicker{position:fixed;inset:0;pointer-events:none;z-index:40;opacity:.05;
+    background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 1px,transparent 1px 3px);animation:flick 9s steps(1) infinite}
+  @keyframes rainFall{from{transform:translateY(-42%)}to{transform:translateY(6%)}}
+  @keyframes flick{0%,91%,93.5%,100%{opacity:.05}91.8%{opacity:.11}92.6%{opacity:.03}}
+  @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes blink{0%,55%{opacity:1}56%,100%{opacity:0}}
+  @keyframes dnaLoad{0%{clip-path:inset(0 100% 0 0);filter:contrast(2) saturate(2.4)}60%{clip-path:inset(0 0 0 0)}100%{clip-path:inset(0 0 0 0);filter:none}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+
+  /* ---------- header ---------- */
+  header{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:24px;
+    padding:18px 40px;background:rgba(11,10,9,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line-soft)}
+  .brand{font-family:var(--mono);font-weight:600;font-size:13px;letter-spacing:.22em;text-decoration:none;white-space:nowrap}
+  .brand b{color:var(--accent)}
+  nav{display:flex;flex-wrap:wrap;gap:26px;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em}
+  nav a{color:var(--muted);text-decoration:none;white-space:nowrap;transition:color .2s}
+  nav a:hover{color:var(--ink)}
+  nav a i{font-style:normal;color:var(--accent);margin-right:6px}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;z-index:1;display:grid;grid-template-columns:minmax(340px,46fr) minmax(320px,54fr);min-height:calc(100vh - 60px)}
+  .hero-ghost{position:absolute;left:-20px;bottom:-40px;z-index:0;font-weight:900;font-size:clamp(160px,24vw,330px);
+    letter-spacing:.02em;color:transparent;-webkit-text-stroke:1px rgba(237,230,216,.055);pointer-events:none;line-height:1}
+  .hero-copy{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;padding:72px 48px 72px 56px}
+  .hero-kicker{margin:0 0 30px;font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:var(--muted);animation:fadeUp .7s .1s cubic-bezier(.2,.7,.2,1) both}
+  .hero h1{margin:0;font-weight:900;font-size:clamp(56px,7.2vw,124px);line-height:1.08;letter-spacing:.04em;animation:fadeUp .8s .2s cubic-bezier(.2,.7,.2,1) both}
+  .hero h1 em{font-style:normal;color:var(--accent)}
+  .hero h1 .nw{white-space:nowrap}
+  .hero-lede{margin:34px 0 0;max-width:32em;font-size:15px;line-height:2.3;letter-spacing:.06em;color:var(--ink-2);text-wrap:pretty;animation:fadeUp .8s .4s cubic-bezier(.2,.7,.2,1) both}
+  .hero-cta{display:flex;flex-wrap:wrap;gap:16px;margin-top:44px;animation:fadeUp .8s .5s cubic-bezier(.2,.7,.2,1) both}
+  .btn{display:inline-block;white-space:nowrap;padding:17px 36px;font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-decoration:none;transition:background .25s,color .25s,border-color .25s}
+  .btn-primary{border:1px solid var(--accent);color:var(--ink)}
+  .btn-primary:hover{background:var(--accent);color:var(--bg)}
+  .btn-ghost{border:1px solid rgba(237,230,216,.28);color:var(--muted)}
+  .btn-ghost:hover{border-color:var(--ink);color:var(--ink)}
+  .hero-sign{margin:52px 0 0;font-size:13px;line-height:1.9;letter-spacing:.1em;color:var(--muted);animation:fadeUp .8s .6s cubic-bezier(.2,.7,.2,1) both}
+  .hero-sign b{color:var(--ink);font-size:15px}
+  .hero-sign span{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em}
+  .hero-fig{position:relative;z-index:1;margin:0;overflow:hidden;animation:fadeIn 1.2s .15s both}
+  .hero-fig img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 62%;filter:saturate(.94) contrast(1.05) brightness(.94)}
+  .hero-fig .grade{position:absolute;inset:0;
+    background:linear-gradient(90deg,var(--bg) 0%,rgba(11,10,9,0) 26%),linear-gradient(270deg,rgba(11,10,9,.55) 0%,rgba(11,10,9,0) 22%),linear-gradient(0deg,var(--bg) 0%,rgba(11,10,9,0) 24%),linear-gradient(180deg,rgba(11,10,9,.62) 0%,rgba(11,10,9,0) 26%)}
+  .hero-fig figcaption{position:absolute;bottom:46px;left:52px;font-family:var(--mono);font-size:10.5px;line-height:2;letter-spacing:.22em;color:var(--muted)}
+  .hero-fig figcaption s{text-decoration:none;color:var(--muted-2)}
+  .hero-fig figcaption b{color:var(--accent);font-weight:600}
+
+  /* ---------- marquee ---------- */
+  .marquee{position:relative;z-index:1;overflow:hidden;border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);background:var(--panel-2)}
+  .marquee-track{display:flex;width:max-content;animation:marquee 30s linear infinite}
+  .marquee-row{display:flex;gap:64px;padding:14px 32px;font-family:var(--mono);font-size:11px;letter-spacing:.26em;color:var(--muted);white-space:nowrap}
+  .marquee-row em{font-style:normal;color:var(--accent)}
+  .marquee-row b{color:var(--ink);font-weight:500}
+
+  /* ---------- section head ---------- */
+  section.block{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:90px 40px}
+  section.block.first{padding-top:120px}
+  .head{display:flex;align-items:baseline;gap:22px;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:44px}
+  .head .num{font-family:var(--mono);font-weight:600;font-size:26px;color:var(--accent)}
+  .head h2{margin:0;font-weight:900;font-size:34px;letter-spacing:.3em}
+  .head .note{margin-left:auto;font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--muted)}
+
+  /* ---------- works ---------- */
+  .works-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:18px}
+  .card{margin:0;background:var(--panel);border:1px solid var(--line-soft);display:flex;flex-direction:column;transition:transform .3s,border-color .3s}
+  .card:hover{transform:translateY(-5px);border-color:rgba(200,69,43,.55)}
+  .card img{width:100%;object-fit:cover}
+  .card figcaption{display:flex;justify-content:space-between;gap:12px;padding:14px 18px;font-size:13px;letter-spacing:.1em}
+  .card figcaption span{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--accent)}
+  .card figcaption span.grey{color:var(--muted)}
+  .card figcaption span.grey i{font-style:normal;color:var(--accent)}
+  .col4{grid-column:span 4}
+  .col2{grid-column:span 2}
+  .h480 img{height:480px}
+  .h420 img{height:420px}
+
+  /* ---------- color dna ---------- */
+  .dna{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:44px;align-items:center}
+  .dna-stage{position:relative;background:#FCFBF9;border:1px solid var(--line-soft);height:640px;overflow:hidden}
+  .dna-stage img{width:100%;height:100%;object-fit:cover}
+  .dna-stage .code{position:absolute;bottom:16px;left:18px;font-family:var(--mono);font-size:10px;letter-spacing:.24em;color:rgba(11,10,9,.5)}
+  .dna h3{display:flex;align-items:baseline;gap:20px;margin:0;font-weight:900;font-size:clamp(90px,10vw,150px);line-height:1}
+  .dna h3 em{font-style:normal;font-family:var(--mono);font-weight:500;font-size:14px;letter-spacing:.26em;color:var(--accent)}
+  .dna .select{margin:18px 0 0;font-family:var(--mono);font-size:11px;letter-spacing:.24em;color:var(--muted)}
+  .dna-table{margin-top:34px;border-top:1px solid var(--line)}
+  .dna-table .row{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:15px 2px;border-bottom:1px solid var(--line)}
+  .dna-table .row span{font-size:13px;letter-spacing:.12em;color:var(--muted)}
+  .dna-table .row b{font-family:var(--mono);font-size:19px}
+  .dna-table .row b.ink{color:var(--ink)}
+  .dna-table .row b.accent{color:var(--accent)}
+  .dna-table .row b.small{font-size:15px;color:var(--accent)}
+  .chips{display:flex;gap:12px;margin-top:34px}
+  .chip{width:64px;height:64px;padding:0;cursor:pointer;background-size:cover;background-position:center 45%;
+    border:1px solid rgba(237,230,216,.18);opacity:.65;filter:saturate(.7);transition:all .2s}
+  .chip.active{border:2px solid var(--accent);opacity:1;filter:none}
+
+  /* ---------- statement ---------- */
+  .terminal{max-width:960px;margin:0 auto;background:var(--panel-2);border:1px solid rgba(237,230,216,.1)}
+  .terminal .bar{display:flex;gap:16px;padding:12px 22px;border-bottom:1px solid rgba(237,230,216,.1);font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--muted)}
+  .terminal p{margin:0;padding:38px 42px 44px;font-family:var(--mono);font-size:14px;line-height:2.7;letter-spacing:.06em;color:var(--ink-2)}
+  .terminal i{font-style:normal;color:var(--accent)}
+  .terminal b{color:var(--ink)}
+  .terminal em{font-style:normal;color:var(--accent)}
+  .cursor{color:var(--accent);animation:blink 1.1s steps(1) infinite}
+
+  /* ---------- exhibitions ---------- */
+  .exh{display:grid;grid-template-columns:130px 1fr auto;align-items:baseline;gap:24px;padding:26px 2px;border-bottom:1px solid rgba(237,230,216,.1)}
+  .exh .date{font-family:var(--mono);font-size:13px;letter-spacing:.14em;color:var(--accent)}
+  .exh p{margin:0;font-weight:700;font-size:19px;letter-spacing:.08em}
+  .exh p small{display:block;margin-top:5px;font-family:var(--mono);font-weight:400;font-size:10.5px;letter-spacing:.2em;color:var(--muted)}
+  .exh .status{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--muted)}
+  .exh .status.done{color:var(--muted-2)}
+
+  /* ---------- profile ---------- */
+  dl.profile{margin:0;max-width:980px}
+  dl.profile .row{display:grid;grid-template-columns:150px 1fr;gap:24px;padding:22px 2px;border-bottom:1px solid rgba(237,230,216,.1)}
+  dl.profile dt{font-family:var(--mono);font-size:11px;letter-spacing:.24em;color:var(--accent);padding-top:5px}
+  dl.profile dd{margin:0;font-size:14.5px;line-height:2.1;letter-spacing:.06em;color:var(--ink-2);text-wrap:pretty}
+
+  /* ---------- contact ---------- */
+  footer.contact{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:120px 40px 60px}
+  footer.contact .big{margin:0;font-weight:900;font-size:clamp(56px,7vw,96px);letter-spacing:.14em;line-height:1}
+  footer.contact .mail{display:inline-block;margin-top:26px;font-family:var(--mono);font-size:15px;letter-spacing:.14em;color:var(--accent);text-decoration:underline;text-underline-offset:6px;transition:color .2s}
+  footer.contact .mail:hover{color:var(--ink)}
+  footer.contact .desc{margin:34px 0 0;max-width:44em;font-size:13px;line-height:2.4;letter-spacing:.06em;color:var(--muted);text-wrap:pretty}
+  footer.contact .foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;margin-top:80px;padding-top:22px;border-top:1px solid rgba(237,230,216,.1);font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--muted-2)}
+  footer.contact .foot a{color:var(--muted);text-decoration:none;transition:color .2s}
+  footer.contact .foot a:hover{color:var(--ink)}
+  footer.contact .foot b{color:var(--accent)}
+
+  @media (max-width:860px){
+    header{padding:14px 20px;flex-direction:column;align-items:flex-start;gap:12px}
+    .hero{grid-template-columns:1fr}
+    .hero-fig{height:70vh;order:-1}
+    .hero-copy{padding:48px 24px}
+    section.block{padding:64px 20px}
+    .works-grid{grid-template-columns:repeat(2,1fr)}
+    .col4,.col2{grid-column:span 2}
+    .exh{grid-template-columns:1fr;gap:6px}
+  }
+</style>
+</head>
+<body>
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="rain" aria-hidden="true">
+    <span>画像ヲ焼ク750℃再生成不可13094752画像ヲ焼ク不可逆焼成窯変貫入剥落エイジング0x4841転写画像ヲ焼ク750℃再生成不可</span>
+    <span>IMAGESFIRED陶ニ焼キ込ム複製可能性∞→0一点物電気窯薪窯多治見備前0x545透明釉IMAGESFIRED陶ニ焼キ込ム複製可能性∞→0</span>
+    <span>HAL日々MAP引用オーバーグレーズ転写290741焼成完了REGEN:DISABLED土ト火ハ生成デキナイHAL日々MAP引用290741</span>
+  </div>
+  <div class="flicker" aria-hidden="true"></div>
+
+  <!-- HEADER -->
+  <header>
+    <a href="#top" class="brand">ISEZAKI YOTARO_<b>/HAL/</b></a>
+    <nav>
+      <a href="#works"><i>01</i>WORKS</a>
+      <a href="#dna"><i>02</i>COLOR DNA</a>
+      <a href="#statement"><i>03</i>STATEMENT</a>
+      <a href="#exhibitions"><i>04</i>EXHIBITIONS</a>
+      <a href="#profile"><i>05</i>PROFILE</a>
+      <a href="#contact"><i>06</i>CONTACT</a>
+    </nav>
+  </header>
+
+  <!-- 00 HERO -->
+  <section id="top" class="hero" data-screen-label="00 HERO">
+    <span class="hero-ghost" aria-hidden="true">/HAL/</span>
+    <div class="hero-copy">
+      <p class="hero-kicker">IMAGES, FIRED — /HAL/</p>
+      <h1>画像を、<br><span class="nw"><em>焼く</em>。</span></h1>
+      <p class="hero-lede">AIが生成したイメージを、陶に焼き付ける。窯を出た瞬間、無限に複製できたはずのイメージは、二度と再生成できない一点物になる。</p>
+      <div class="hero-cta">
+        <a href="#works" class="btn btn-primary">ARCHIVE を見る</a>
+        <a href="#contact" class="btn btn-ghost">CONTACT</a>
+      </div>
+      <p class="hero-sign"><b>伊勢崎 陽太郎</b><br><span>ISEZAKI YOTARO — CERAMIC ARTIST / TAJIMI, JP</span></p>
+    </div>
+    <figure class="hero-fig">
+      <img src="assets/hero-2x.jpg" width="1601" height="2400" fetchpriority="high" decoding="async" alt="HAL — AI生成キャラクターを転写・焼成した壺">
+      <div class="grade" aria-hidden="true"></div>
+      <figcaption>壺 <s>— HAL</s><br>750°C / 7H — <b>REGEN: DISABLED</b></figcaption>
+    </figure>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <div class="marquee-row"><span>▚ OVERGLAZE TRANSFER</span><span>電気窯 <em>750°C — 7H</em></span><span><b>REGEN: DISABLED</b></span><span>IMAGE → CLAY → <em>FIRED</em></span><span>HAL / 日々 / MAP / 引用</span><span>TAJIMI GIFU JP</span></div>
+      <div class="marquee-row"><span>▚ OVERGLAZE TRANSFER</span><span>電気窯 <em>750°C — 7H</em></span><span><b>REGEN: DISABLED</b></span><span>IMAGE → CLAY → <em>FIRED</em></span><span>HAL / 日々 / MAP / 引用</span><span>TAJIMI GIFU JP</span></div>
+    </div>
+  </div>
+
+  <!-- 01 WORKS -->
+  <section id="works" class="block first" data-screen-label="01 WORKS">
+    <div class="head"><span class="num">01</span><h2>WORKS</h2><span class="note">ARCHIVE // ALL SPECIMENS: FIRED</span></div>
+    <div class="works-grid" id="worksGrid"></div>
+  </section>
+
+  <!-- 02 COLOR DNA -->
+  <section id="dna" class="block" data-screen-label="02 COLOR DNA">
+    <div class="head"><span class="num">02</span><h2>COLOR DNA</h2><span class="note">HALの人格は、色で分岐する</span></div>
+    <div class="dna">
+      <div class="dna-stage">
+        <img loading="lazy" decoding="async" width="1001" height="1500" id="dnaImg" src="assets/isezaki_IY_28_2.jpg" alt="HAL 赤">
+        <span class="code" id="dnaStageCode">SPECIMEN // HAL_01 / 緋</span>
+      </div>
+      <div>
+        <h3><span id="dnaKanji" style="color:#C8452B">赤</span><em id="dnaCode">HAL_01 / 緋</em></h3>
+        <p class="select">SELECT — 器に焼き込む色を選択</p>
+        <div class="dna-table">
+          <div class="row"><span>複製可能性（生成時）</span><b class="ink">∞</b></div>
+          <div class="row"><span>複製可能性（焼成後）</span><b class="accent">0</b></div>
+          <div class="row"><span>土・火の介入</span><b class="ink">100%</b></div>
+          <div class="row"><span>同一個体</span><b class="small">存在しない</b></div>
+        </div>
+        <div class="chips" id="chips"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 STATEMENT -->
+  <section id="statement" class="block" data-screen-label="03 STATEMENT">
+    <div class="head"><span class="num">03</span><h2>STATEMENT</h2><span class="note">LOG — DRAFT / 現在も書き換え中</span></div>
+    <div class="terminal">
+      <div class="bar"><span>KILN_LOG.txt</span><span>—</span><span>ISEZAKI_YOTARO</span></div>
+      <p>
+        <i>&gt;</i> AIも、窯も、<b>委ねる場所</b>だ。<br>
+        <i>&gt;</i> ただし窯だけが、結果に後戻りを許さない。<br>
+        <i>&gt;</i> _<br>
+        <i>&gt;</i> <b>画像を焼くとは、消せるものを、消せなくする行為。</b><br>
+        <i>&gt;</i> _<br>
+        <i>&gt;</i> 窯から出す、その瞬間。<br>
+        <i>&gt;</i> AIが生成した画像に土の力でエイジングがかかり、<b>一点物になる</b>——<br>
+        <i>&gt;</i> REGENERATION: <em>PERMANENTLY DISABLED</em><span class="cursor">▊</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- 04 EXHIBITIONS -->
+  <section id="exhibitions" class="block" data-screen-label="04 EXHIBITIONS">
+    <div class="head" style="margin-bottom:24px"><span class="num">04</span><h2>EXHIBITIONS</h2><span class="note">UPCOMING / RECENT</span></div>
+    <div>
+      <div class="exh"><span class="date">2026.09</span><p>CIBONE 表参道<small>OMOTESANDO, TOKYO</small></p><span class="status">予定</span></div>
+      <div class="exh"><span class="date">2026</span><p>日本橋三越<small>NIHONBASHI MITSUKOSHI, TOKYO</small></p><span class="status">予定</span></div>
+      <div class="exh"><span class="date">2027</span><p>台湾・韓国 巡回展<small>VIA MUSEUM OF MODERN CERAMIC ART, GIFU</small></p><span class="status">予定</span></div>
+      <div class="exh"><span class="date">2027.12</span><p>Sophie Tappeiner Gallery<small>VIENNA, AUSTRIA</small></p><span class="status">予定</span></div>
+      <div class="exh"><span class="date">2026.06</span><p>個展【HAL】 水犀<small>MIZUSAI, TOKYO — SOLO EXHIBITION</small></p><span class="status done">終了</span></div>
+    </div>
+  </section>
+
+  <!-- 05 PROFILE -->
+  <section id="profile" class="block" data-screen-label="05 PROFILE">
+    <div class="head" style="margin-bottom:24px"><span class="num">05</span><h2>PROFILE</h2><span class="note">DOSSIER — ISEZAKI_YOTARO</span></div>
+    <dl class="profile">
+      <div class="row"><dt>NAME</dt><dd>伊勢崎 陽太郎 / ISEZAKI YOTARO</dd></div>
+      <div class="row"><dt>ORIGIN</dt><dd>1995年、備前に生まれる。土と火が千年続いてきた場所で育ち、同じ頃、テレビと雑誌の中のアニメと漫画に育てられた。この二つが、いまも自分の持っているすべての言語。</dd></div>
+      <div class="row"><dt>BASE</dt><dd>岐阜県多治見市</dd></div>
+      <div class="row"><dt>METHOD</dt><dd>AIが生成したイメージを、オーバーグレーズ転写で器に焼き付ける。AIも窯も、結果を委ねる場所であることは同じ。ただし窯だけが、後戻りを許さない。</dd></div>
+      <div class="row"><dt>SERIES</dt><dd>HAL（AI生成キャラクター）／ 日々（カメラロールの地層）／ map（制作の座標）／ 引用（自身を形作った言葉）——すべてのシリーズが、同じ一つの動詞でできている。画像を、焼く。</dd></div>
+      <div class="row"><dt>KILN</dt><dd>電気窯 / 薪窯 — 750°C, 7 HOURS</dd></div>
+    </dl>
+  </section>
+
+  <!-- 06 CONTACT -->
+  <footer id="contact" class="contact" data-screen-label="06 CONTACT">
+    <p class="big">CONTACT<span class="cursor" style="font-weight:900">_</span></p>
+    <a href="mailto:youta976@gmail.com" class="mail">youta976@gmail.com</a>
+    <p class="desc">作品のご購入は取扱ギャラリーおよび展覧会会場にて。ブランド・IPとのコラボレーションのご相談も受け付けています——貴社のアイコンを、二度と再生成できない一点物の文脈へ。</p>
+    <div class="foot">
+      <span>© 2026 ISEZAKI YOTARO</span>
+      <a href="https://www.instagram.com/youtarou21/" target="_blank" rel="noopener">INSTAGRAM — @youtarou21</a>
+      <span><b>/HAL/</b> — IMAGES, FIRED.</span>
+    </div>
+  </footer>
+
+  <script src="assets/works-data.js"></script>
+  <script>
+    // ---- WORKS: assets/works-data.js から描画(admin.html で編集可能) ----
+    (function(){
+      // 7枚周期のモザイクパターン(大=span4 / 小=span2、行内で高さを揃える)
+      var PATTERN = ['col4 h480','col2 h480','col2 h420','col2 h420','col2 h420','col2 h480','col4 h480'];
+      var grid = document.getElementById('worksGrid');
+      (window.WORKS || []).forEach(function(w, i){
+        var fig = document.createElement('figure');
+        fig.className = 'card ' + PATTERN[i % PATTERN.length];
+        var img = document.createElement('img');
+        img.src = w.img;
+        img.alt = 'HAL — ' + w.title;
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        if (w.pos) img.style.objectPosition = w.pos;
+        var cap = document.createElement('figcaption');
+        var b = document.createElement('b');
+        b.textContent = w.title;
+        var span = document.createElement('span');
+        span.textContent = w.cap || 'FIRED';
+        cap.appendChild(b); cap.appendChild(span);
+        fig.appendChild(img); fig.appendChild(cap);
+        grid.appendChild(fig);
+      });
+    })();
+
+    // ---- Color DNA switcher ----
+    var DNA = [
+      { kanji:'赤', code:'HAL_01 / 緋', img:'assets/isezaki_IY_28_2.jpg', color:'#C8452B', pos:'center 62%' },
+      { kanji:'緑', code:'HAL_02 / 翠', img:'assets/isezaki_IY_32_2.jpg', color:'#4E8A5E', pos:'center 42%' },
+      { kanji:'紫', code:'HAL_03 / 菫', img:'assets/isezaki_IY_9_2.jpg',  color:'#7A68B5', pos:'center 55%' },
+      { kanji:'桃', code:'HAL_04 / 華', img:'assets/isezaki_IY_23_3.jpg', color:'#C86A8E', pos:'center 45%' },
+      { kanji:'黄', code:'HAL_05 / 燿', img:'assets/isezaki_IY_30_2.jpg', color:'#C9A227', pos:'center 45%' }
+    ];
+    var img = document.getElementById('dnaImg');
+    var kanji = document.getElementById('dnaKanji');
+    var code = document.getElementById('dnaCode');
+    var stageCode = document.getElementById('dnaStageCode');
+    var chipsEl = document.getElementById('chips');
+
+    function select(i){
+      var d = DNA[i];
+      img.src = d.img;
+      img.alt = 'HAL ' + d.kanji;
+      img.style.objectPosition = d.pos;
+      img.style.animation = 'none';
+      void img.offsetWidth; // reflow to restart animation
+      img.style.animation = 'dnaLoad .45s steps(6) both';
+      kanji.textContent = d.kanji;
+      kanji.style.color = d.color;
+      code.textContent = d.code;
+      stageCode.textContent = 'SPECIMEN // ' + d.code;
+      [].forEach.call(chipsEl.children, function(c, ci){ c.classList.toggle('active', ci === i); });
+    }
+
+    DNA.forEach(function(d, i){
+      var b = document.createElement('button');
+      b.className = 'chip' + (i === 0 ? ' active' : '');
+      b.setAttribute('aria-label', d.kanji);
+      b.style.backgroundImage = 'url(' + d.img + ')';
+      b.addEventListener('click', function(){ select(i); });
+      chipsEl.appendChild(b);
+    });
+  </script>
+</body>
+</html>

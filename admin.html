@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>WORKS 管理 — /HAL/</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0A09; --panel:#151210; --panel-2:#100E0C;
+    --ink:#EDE6D8; --ink-2:#CFC7B8; --muted:#B8AE9C; --muted-2:#8A8478;
+    --accent:#C8452B; --ok:#4E8A5E;
+    --line:rgba(237,230,216,.12); --line-soft:rgba(237,230,216,.08);
+    --sans:'Zen Kaku Gothic New',sans-serif; --mono:'IBM Plex Mono',monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans)}
+  header{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:20px;padding:16px 28px;
+    background:rgba(11,10,9,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line-soft)}
+  header .brand{font-family:var(--mono);font-weight:600;font-size:13px;letter-spacing:.22em}
+  header .brand b{color:var(--accent)}
+  header .sp{flex:1}
+  main{max-width:1100px;margin:0 auto;padding:36px 28px 120px}
+
+  .btn{display:inline-block;padding:13px 26px;font-family:var(--mono);font-size:12px;letter-spacing:.18em;
+    background:none;border:1px solid rgba(237,230,216,.28);color:var(--ink);cursor:pointer;transition:all .2s}
+  .btn:hover{border-color:var(--ink)}
+  .btn.primary{border-color:var(--accent)}
+  .btn.primary:hover{background:var(--accent);color:var(--bg)}
+  .btn:disabled{opacity:.35;cursor:default}
+
+  .note{font-size:13px;line-height:2;letter-spacing:.05em;color:var(--muted)}
+  .note b{color:var(--ink)}
+  .warn{padding:16px 20px;border:1px solid var(--accent);color:var(--ink-2);font-size:13px;line-height:2}
+
+  #status{font-family:var(--mono);font-size:11px;letter-spacing:.15em;color:var(--muted)}
+  #status.ok{color:var(--ok)}
+  #status.err{color:var(--accent)}
+
+  .steps{display:flex;flex-direction:column;gap:14px;margin:26px 0 0}
+  .step{display:flex;gap:16px;align-items:baseline;font-size:13.5px;letter-spacing:.05em;color:var(--ink-2)}
+  .step i{font-style:normal;font-family:var(--mono);color:var(--accent);font-size:12px}
+
+  #list{display:flex;flex-direction:column;gap:14px;margin-top:30px}
+  .row{display:grid;grid-template-columns:150px 1fr auto;gap:20px;padding:16px;
+    background:var(--panel);border:1px solid var(--line-soft);align-items:center}
+  .row.dragover{border-color:var(--accent)}
+  .thumb{position:relative;width:150px;height:110px;background:var(--panel-2);overflow:hidden;cursor:pointer}
+  .thumb img{width:100%;height:100%;object-fit:cover}
+  .thumb .hint{position:absolute;inset:auto 0 0 0;padding:3px 6px;background:rgba(11,10,9,.72);
+    font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--muted);text-align:center}
+  .fields{display:flex;flex-direction:column;gap:10px;min-width:0}
+  .fields label{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--muted)}
+  .fields input[type=text]{flex:1;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);
+    padding:9px 12px;font-family:var(--sans);font-size:14px;letter-spacing:.05em}
+  .fields input[type=text]:focus{outline:none;border-color:var(--accent)}
+  .fields input[type=range]{flex:1;accent-color:var(--accent)}
+  .ops{display:flex;flex-direction:column;gap:8px}
+  .ops button{width:34px;height:34px;background:none;border:1px solid var(--line);color:var(--muted);
+    font-family:var(--mono);font-size:13px;cursor:pointer;transition:all .15s}
+  .ops button:hover{border-color:var(--ink);color:var(--ink)}
+  .ops button.del:hover{border-color:var(--accent);color:var(--accent)}
+
+  #dropzone{margin-top:22px;padding:44px 20px;border:1px dashed rgba(237,230,216,.25);text-align:center;
+    font-size:13px;letter-spacing:.08em;color:var(--muted);cursor:pointer;transition:all .2s}
+  #dropzone.dragover,#dropzone:hover{border-color:var(--accent);color:var(--ink)}
+
+  .savebar{position:fixed;bottom:0;left:0;right:0;display:none;align-items:center;gap:20px;
+    padding:14px 28px;background:rgba(11,10,9,.94);backdrop-filter:blur(12px);border-top:1px solid var(--line-soft)}
+  .savebar.show{display:flex}
+  .savebar .sp{flex:1}
+</style>
+</head>
+<body>
+<header>
+  <span class="brand">/HAL/ <b>WORKS 管理</b></span>
+  <span class="sp"></span>
+  <span id="status">フォルダ未選択</span>
+</header>
+<main>
+  <div id="unsupported" class="warn" hidden>
+    このブラウザはフォルダ書き込みに対応していません。<b>Google Chrome</b> でこのページを開いてください。
+  </div>
+
+  <section id="intro">
+    <p class="note">
+      サイトの <b>01 WORKS</b> に載せる作品を編集します。ここで保存した内容は
+      <b>assets/works-data.js</b> に書き込まれ、サイトに即反映されます(公開には「公開.command」の実行が必要)。
+    </p>
+    <div class="steps">
+      <div class="step"><i>01</i>下のボタンで「hal-site」フォルダを選ぶ(初回のみ許可を求められます)</div>
+      <div class="step"><i>02</i>画像をドラッグで差し替え/追加、作品名を入力、↑↓で並べ替え</div>
+      <div class="step"><i>03</i>「保存」を押す → デスクトップの hal-site 内の「公開.command」をダブルクリックで公開</div>
+    </div>
+    <p style="margin-top:28px"><button class="btn primary" id="openBtn">hal-site フォルダを開く</button></p>
+  </section>
+
+  <section id="editor" hidden>
+    <div id="list"></div>
+    <div id="dropzone">＋ ここに写真をドラッグ(またはクリックで選択)して作品を追加<br>
+      <span style="font-family:var(--mono);font-size:10px;letter-spacing:.15em">大きい写真は自動で縮小・軽量化されます</span>
+    </div>
+    <input type="file" id="filepick" accept="image/*" multiple hidden>
+  </section>
+</main>
+
+<div class="savebar" id="savebar">
+  <span class="note" id="savenote">未保存の変更があります</span>
+  <span class="sp"></span>
+  <a class="btn" href="index.html" target="_blank">サイトを確認</a>
+  <button class="btn primary" id="saveBtn">保存</button>
+</div>
+
+<script>
+let root = null;        // hal-site ディレクトリハンドル
+let works = [];         // 編集中データ
+let dirty = false;
+const $ = id => document.getElementById(id);
+const status = (msg, cls) => { const s = $('status'); s.textContent = msg; s.className = cls || ''; };
+
+if (!window.showDirectoryPicker) {
+  $('unsupported').hidden = false;
+  $('openBtn').disabled = true;
+}
+
+$('openBtn').addEventListener('click', async () => {
+  try {
+    root = await showDirectoryPicker({ id: 'hal-site', mode: 'readwrite' });
+    const assets = await root.getDirectoryHandle('assets');
+    const fh = await assets.getFileHandle('works-data.js');
+    const text = await (await fh.getFile()).text();
+    works = JSON.parse(text.slice(text.indexOf('['), text.lastIndexOf(']') + 1));
+    $('intro').hidden = true;
+    $('editor').hidden = false;
+    $('savebar').classList.add('show');
+    status('読み込み完了 — ' + works.length + ' 作品', 'ok');
+    render();
+  } catch (e) {
+    if (e.name === 'AbortError') return;
+    status('読み込み失敗: hal-site フォルダを選んでいますか?', 'err');
+  }
+});
+
+function markDirty(){ dirty = true; $('savenote').textContent = '未保存の変更があります — 保存を押してください'; }
+
+async function fileURL(path){
+  try {
+    let dir = root;
+    const parts = path.split('/');
+    for (const p of parts.slice(0, -1)) dir = await dir.getDirectoryHandle(p);
+    const f = await (await dir.getFileHandle(parts.at(-1))).getFile();
+    return URL.createObjectURL(f);
+  } catch { return null; }
+}
+
+function render(){
+  const list = $('list');
+  list.textContent = '';
+  works.forEach((w, i) => {
+    const row = document.createElement('div');
+    row.className = 'row';
+
+    const thumb = document.createElement('div');
+    thumb.className = 'thumb';
+    const img = document.createElement('img');
+    img.alt = w.title;
+    fileURL(w.img).then(u => { if (u) img.src = u; });
+    if (w.pos) img.style.objectPosition = w.pos;
+    const hint = document.createElement('div');
+    hint.className = 'hint';
+    hint.textContent = '画像をドラッグで差し替え';
+    thumb.append(img, hint);
+
+    const fields = document.createElement('div');
+    fields.className = 'fields';
+    const mk = (labelText, value, oninput) => {
+      const label = document.createElement('label');
+      label.textContent = labelText;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = value;
+      input.addEventListener('input', () => { oninput(input.value); markDirty(); });
+      label.appendChild(input);
+      return label;
+    };
+    fields.appendChild(mk('作品名', w.title, v => w.title = v));
+    fields.appendChild(mk('キャプション', w.cap || 'FIRED', v => w.cap = v));
+    const posLabel = document.createElement('label');
+    posLabel.textContent = '表示位置(上↔下)';
+    const range = document.createElement('input');
+    range.type = 'range'; range.min = 0; range.max = 100;
+    range.value = parseInt((w.pos || 'center 50%').match(/(\d+)%$/)?.[1] ?? 50);
+    range.addEventListener('input', () => {
+      w.pos = 'center ' + range.value + '%';
+      img.style.objectPosition = w.pos;
+      markDirty();
+    });
+    posLabel.appendChild(range);
+    fields.appendChild(posLabel);
+
+    const ops = document.createElement('div');
+    ops.className = 'ops';
+    const mkOp = (txt, cls, fn) => {
+      const b = document.createElement('button');
+      b.textContent = txt; if (cls) b.className = cls;
+      b.addEventListener('click', fn);
+      return b;
+    };
+    ops.appendChild(mkOp('↑', '', () => { if (i > 0){ [works[i-1], works[i]] = [works[i], works[i-1]]; markDirty(); render(); } }));
+    ops.appendChild(mkOp('↓', '', () => { if (i < works.length-1){ [works[i+1], works[i]] = [works[i], works[i+1]]; markDirty(); render(); } }));
+    ops.appendChild(mkOp('×', 'del', () => {
+      if (confirm('「' + w.title + '」を一覧から削除しますか?(画像ファイル自体は残ります)')){
+        works.splice(i, 1); markDirty(); render();
+      }
+    }));
+
+    // ドラッグで画像差し替え
+    row.addEventListener('dragover', e => { e.preventDefault(); row.classList.add('dragover'); });
+    row.addEventListener('dragleave', () => row.classList.remove('dragover'));
+    row.addEventListener('drop', async e => {
+      e.preventDefault(); row.classList.remove('dragover');
+      const f = [...e.dataTransfer.files].find(f => f.type.startsWith('image/'));
+      if (!f) return;
+      const path = await importImage(f);
+      if (path){ w.img = path; markDirty(); render(); }
+    });
+
+    row.append(thumb, fields, ops);
+    list.appendChild(row);
+  });
+}
+
+// 写真を最大1600pxに縮小してJPEGで assets/works/ に保存し、パスを返す
+async function importImage(file){
+  try {
+    status('画像を取り込み中…');
+    const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    const MAX = 1600;
+    const scale = Math.min(1, MAX / Math.max(bmp.width, bmp.height));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(bmp.width * scale);
+    canvas.height = Math.round(bmp.height * scale);
+    canvas.getContext('2d').drawImage(bmp, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.82));
+
+    const base = file.name.replace(/\.[^.]+$/, '').normalize('NFKD')
+      .replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40) || 'work';
+    const name = base + '-' + Date.now().toString(36) + '.jpg';
+
+    const assets = await root.getDirectoryHandle('assets');
+    const worksDir = await assets.getDirectoryHandle('works', { create: true });
+    const fh = await worksDir.getFileHandle(name, { create: true });
+    const wr = await fh.createWritable();
+    await wr.write(blob);
+    await wr.close();
+    status('画像を取り込みました', 'ok');
+    return 'assets/works/' + name;
+  } catch (e) {
+    status('画像の取り込みに失敗: ' + e.message, 'err');
+    return null;
+  }
+}
+
+async function addFiles(files){
+  for (const f of files){
+    if (!f.type.startsWith('image/')) continue;
+    const path = await importImage(f);
+    if (path) works.push({ img: path, title: '無題', cap: 'FIRED', pos: 'center 50%' });
+  }
+  markDirty(); render();
+}
+
+const dz = $('dropzone');
+dz.addEventListener('click', () => $('filepick').click());
+$('filepick').addEventListener('change', e => addFiles([...e.target.files]));
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('dragover'); addFiles([...e.dataTransfer.files]); });
+
+$('saveBtn').addEventListener('click', async () => {
+  try {
+    const assets = await root.getDirectoryHandle('assets');
+    const fh = await assets.getFileHandle('works-data.js', { create: true });
+    const wr = await fh.createWritable();
+    await wr.write('window.WORKS = ' + JSON.stringify(works, null, 2) + ';\n');
+    await wr.close();
+    dirty = false;
+    $('savenote').textContent = '保存済み — 「公開.command」で公開できます';
+    status('保存しました(' + works.length + ' 作品)', 'ok');
+  } catch (e) {
+    status('保存に失敗: ' + e.message, 'err');
+  }
+});
+
+window.addEventListener('beforeunload', e => { if (dirty) e.preventDefault(); });
+</script>
+</body>
+</html>
