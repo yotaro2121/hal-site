@@ -82,9 +82,21 @@
   @keyframes blink{0%,55%{opacity:1}56%,100%{opacity:0}}
   @keyframes dnaLoad{0%{clip-path:inset(0 100% 0 0);filter:contrast(2) saturate(2.4)}60%{clip-path:inset(0 0 0 0)}100%{clip-path:inset(0 0 0 0);filter:none}}
   @keyframes heroScale{from{transform:scale(1.045)}to{transform:scale(1)}}
+  /* 一瞬だけRGBが割れる窯出しグリッチ(初回ロード＆ホバー時に1回) */
+  @keyframes rgbSplit{
+    0%{text-shadow:0 0 0 transparent;transform:translate(0)}
+    12%{text-shadow:-3px 0 var(--accent),3px 0 var(--violet);transform:translate(1px,-1px)}
+    24%{text-shadow:3px 0 var(--accent),-3px 0 var(--violet);transform:translate(-1px,1px)}
+    36%{text-shadow:-2px 0 var(--accent),2px 0 var(--violet);transform:translate(0)}
+    50%,100%{text-shadow:0 0 0 transparent;transform:translate(0)}
+  }
+  @keyframes scanSweep{
+    0%{clip-path:inset(0 0 82% 0)}100%{clip-path:inset(82% 0 0 0)}
+  }
   @media (prefers-reduced-motion:reduce){
     *{animation:none!important;transition:none!important}
-    html.js .reveal{opacity:1;transform:none}
+    html.js .reveal,html.js .reel-copy{opacity:1;transform:none}
+    html.js .hero-ghost,html.js .hero-fig,html.js .hero-copy{transform:none}
   }
 
   /* ---------- header ---------- */
@@ -124,6 +136,33 @@
   .hero-fig figcaption{position:absolute;bottom:46px;left:52px;font-family:var(--mono);font-size:10.5px;line-height:2;letter-spacing:.22em;color:var(--muted)}
   .hero-fig figcaption s{text-decoration:none;color:var(--muted-2)}
   .hero-fig figcaption b{color:var(--accent);font-weight:600}
+  /* パララックス: JSが --px/--py(-1〜1)をheroに与え、各層が深度違いで動く */
+  .hero{--px:0;--py:0}
+  html.js .hero-ghost{transform:translate3d(calc(var(--px)*34px),calc(var(--py)*26px),0);transition:transform .5s cubic-bezier(.2,.7,.2,1);will-change:transform}
+  html.js .hero-fig{transform:translate3d(calc(var(--px)*-16px),calc(var(--py)*-12px),0);transition:transform .6s cubic-bezier(.2,.7,.2,1);will-change:transform}
+  html.js .hero-copy{transform:translate3d(calc(var(--px)*10px),calc(var(--py)*8px),0);transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+  /* 見出しの一瞬グリッチ */
+  .glitch{position:relative;display:inline-block}
+  .glitch.fire{animation:rgbSplit .5s steps(1) 1}
+  .hero h1:hover .glitch.fire{animation:rgbSplit .5s steps(1) 1}
+  .glitch::after{content:attr(data-t);position:absolute;left:0;top:0;color:var(--violet);opacity:0;mix-blend-mode:screen;pointer-events:none}
+  .glitch.fire::after{opacity:.5;animation:scanSweep .5s steps(2) 1}
+
+  /* ---------- cinematic pot(scroll-scrub video) ---------- */
+  .reel{position:relative;z-index:1;height:180vh}
+  .reel-sticky{position:sticky;top:0;height:100vh;overflow:hidden;display:grid;place-items:center;background:var(--bg)}
+  .reel video,.reel .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    filter:saturate(.92) contrast(1.06) brightness(.9)}
+  .reel .veil{position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(120% 90% at 50% 45%,rgba(11,10,9,0) 40%,rgba(11,10,9,.5) 78%,var(--bg) 100%)}
+  .reel .scan{position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 2px,transparent 2px 4px)}
+  .reel-copy{position:relative;z-index:2;text-align:center;padding:0 24px;max-width:900px;
+    opacity:0;transform:translateY(20px);transition:opacity .9s,transform .9s}
+  .reel-copy.in{opacity:1;transform:none}
+  .reel-copy .k{font-family:var(--mono);font-size:11px;letter-spacing:.34em;color:var(--accent)}
+  .reel-copy h2{margin:16px 0 0;font-weight:900;font-size:clamp(34px,5.4vw,74px);letter-spacing:.08em;line-height:1.14}
+  .reel-copy p{margin:22px auto 0;max-width:38em;font-family:var(--mono);font-size:12px;line-height:2.2;letter-spacing:.18em;color:var(--muted)}
 
   /* ---------- marquee ---------- */
   .marquee{position:relative;z-index:1;overflow:hidden;border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);background:var(--panel-2)}
@@ -141,9 +180,11 @@
   .head .note{margin-left:auto;font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--muted)}
 
   /* ---------- works ---------- */
-  .works-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:18px}
-  .card{margin:0;background:var(--panel);border:1px solid var(--line-soft);display:flex;flex-direction:column;overflow:hidden;transition:transform .3s,border-color .3s}
-  .card:hover{transform:translateY(-5px);border-color:rgba(200,69,43,.55)}
+  .works-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:18px;perspective:1400px}
+  .card{margin:0;background:var(--panel);border:1px solid var(--line-soft);display:flex;flex-direction:column;overflow:hidden;
+    transform-style:preserve-3d;transition:transform .3s cubic-bezier(.2,.7,.2,1),border-color .3s;will-change:transform}
+  .card:hover{border-color:rgba(200,69,43,.55)}
+  html:not(.js) .card:hover,.card.notilt:hover{transform:translateY(-5px)}
   .card img{width:100%;object-fit:cover;transition:transform .7s cubic-bezier(.2,.6,.15,1)}
   .card:hover img{transform:scale(1.03)}
   .card figcaption{display:flex;justify-content:space-between;gap:12px;padding:14px 18px;font-size:13px;letter-spacing:.1em}
@@ -230,6 +271,8 @@
     .col4,.col2{grid-column:span 2}
     .dna-stage{height:min(88vw,480px)}
     .exh{grid-template-columns:1fr;gap:6px}
+    .reel{height:150vh}
+    .reel-copy h2{letter-spacing:.05em}
   }
 </style>
 </head>
@@ -259,8 +302,8 @@
   <section id="top" class="hero" data-screen-label="00 HERO">
     <span class="hero-ghost" aria-hidden="true">/HAL/</span>
     <div class="hero-copy">
-      <p class="hero-kicker">IMAGES, FIRED — /HAL/</p>
-      <h1>画像を、<br><span class="nw"><em>焼く</em>。</span></h1>
+      <p class="hero-kicker" data-scramble>IMAGES, FIRED — /HAL/</p>
+      <h1>画像を、<br><span class="nw"><span class="glitch" data-t="焼く"><em>焼く</em></span>。</span></h1>
       <p class="hero-lede">AIが生成したイメージを、陶に焼き付ける。窯を出た瞬間、無限に複製できたはずのイメージは、二度と再生成できない一点物になる。</p>
       <div class="hero-cta">
         <a href="#works" class="btn btn-primary">ARCHIVE を見る</a>
@@ -282,6 +325,23 @@
       <div class="marquee-row"><span>▚ OVERGLAZE TRANSFER</span><span>電気窯 <em>750°C — 7H</em></span><span><b>REGEN: DISABLED</b></span><span>IMAGE → CLAY → <em>FIRED</em></span><span>HAL / 日々 / MAP / 引用</span><span>TAJIMI GIFU JP</span></div>
     </div>
   </div>
+
+  <!-- CINEMATIC REEL(スクロールで再生する壺) -->
+  <section class="reel" id="reel" aria-label="窯の中の壺" data-screen-label="REEL">
+    <div class="reel-sticky">
+      <video id="reelVideo" muted loop playsinline preload="auto" poster="assets/hal-turn-poster.jpg" aria-hidden="true">
+        <source src="assets/hal-turn.mp4" type="video/mp4">
+      </video>
+      <img class="poster" id="reelPoster" src="assets/hal-turn-poster.jpg" alt="窯変した壺" hidden>
+      <div class="scan" aria-hidden="true"></div>
+      <div class="veil" aria-hidden="true"></div>
+      <div class="reel-copy" id="reelCopy">
+        <p class="k">750°C — 7 HOURS</p>
+        <h2>窯の中で、<br>イメージは戻れなくなる。</h2>
+        <p>REGEN: DISABLED — 複製可能性 ∞ → 0</p>
+      </div>
+    </div>
+  </section>
 
   <!-- 01 WORKS -->
   <section id="works" class="block first" data-screen-label="01 WORKS">
@@ -456,6 +516,128 @@
         });
       });
     }
+
+    // ================= MOTION (静謐→一瞬の療乱) =================
+    var reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+    var fine = matchMedia('(pointer:fine)').matches;
+
+    // 1) 見出しキッカーの文字スクランブル(カタカナを経て解決)→ 焼く のグリッチ
+    (function(){
+      var el = document.querySelector('[data-scramble]');
+      if (!el) return;
+      var fire = document.querySelector('.glitch');
+      var fireGlitch = function(){ if (!fire) return; fire.classList.remove('fire'); void fire.offsetWidth; fire.classList.add('fire'); };
+      if (reduce){ setTimeout(fireGlitch, 400); return; }
+      var final = el.textContent, glyphs = 'アカサタナ01=/—▚ヲ焼ク◇';
+      var frame = 0, total = final.length;
+      el.textContent = '';
+      var id = setInterval(function(){
+        frame++;
+        var out = '';
+        for (var i = 0; i < total; i++){
+          if (i < frame * 0.6) out += final[i];
+          else if (final[i] === ' ') out += ' ';
+          else out += glyphs[(Math.random() * glyphs.length) | 0];
+        }
+        el.textContent = out;
+        if (frame * 0.6 >= total){ el.textContent = final; clearInterval(id); fireGlitch(); }
+      }, 42);
+    })();
+
+    // 2) カーソル・パララックス(hero層が深度違いで動く / fine pointerのみ)
+    if (!reduce && fine){
+      var hero = document.querySelector('.hero');
+      if (hero){
+        var tx = 0, ty = 0, running = false;
+        window.addEventListener('pointermove', function(e){
+          tx = (e.clientX / innerWidth - .5) * 2;
+          ty = (e.clientY / innerHeight - .5) * 2;
+          if (!running){ running = true; requestAnimationFrame(function(){
+            hero.style.setProperty('--px', tx.toFixed(3));
+            hero.style.setProperty('--py', ty.toFixed(3));
+            running = false;
+          }); }
+        }, { passive: true });
+      }
+    }
+
+    // 3) 作品カードがカーソルに向かって傾く(fine pointerのみ)
+    if (!reduce && fine){
+      document.addEventListener('pointermove', function(e){
+        var card = e.target.closest && e.target.closest('.card');
+        if (!card) return;
+        var r = card.getBoundingClientRect();
+        var rx = ((e.clientY - r.top) / r.height - .5) * -8;
+        var ry = ((e.clientX - r.left) / r.width - .5) * 8;
+        card.style.transform = 'translateY(-5px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg)';
+      }, { passive: true });
+      document.addEventListener('pointerout', function(e){
+        var card = e.target.closest && e.target.closest('.card');
+        if (card && !card.contains(e.relatedTarget)) card.style.transform = '';
+      }, { passive: true });
+    }
+
+    // 4) スクロールで再生する壺の動画(currentTime を scroll 進捗で駆動)
+    (function(){
+      var reel = document.getElementById('reel'),
+          vid = document.getElementById('reelVideo'),
+          copy = document.getElementById('reelCopy');
+      if (!reel || !vid) return;
+      // reel-copy を表示
+      if ('IntersectionObserver' in window){
+        new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting) copy.classList.add('in'); }); },
+          { threshold: .5 }).observe(copy);
+      } else { copy.classList.add('in'); }
+
+      if (reduce){ return; } // reduced-motion時はポスター静止のまま(loopも回さない)
+
+      // 既定はアンビエント・ループ再生(全ブラウザで確実に動く)。
+      // ブラウザがシーク可能と実証できたら scroll-scrub へ昇格する。
+      var dur = 0, mode = 'loop';
+      vid.addEventListener('loadedmetadata', function(){ dur = vid.duration || 5; });
+
+      function startLoop(){ var p = vid.play(); if (p && p.catch) p.catch(function(){}); }
+
+      // スクラブ可能かを一度だけ判定: currentTimeを動かして seeked が返るか
+      function probeScrub(){
+        if (dur < 0.5) return;
+        var probed = false;
+        var onSeek = function(){
+          probed = true; vid.removeEventListener('seeked', onSeek);
+          // シーク成功 → scrub モードへ。ループ停止しスクロール駆動に切替
+          mode = 'scrub'; vid.loop = false; vid.pause();
+          window.addEventListener('scroll', onScroll, { passive: true });
+          update();
+        };
+        vid.addEventListener('seeked', onSeek);
+        try { vid.currentTime = 0.15; } catch(e){}
+        setTimeout(function(){ if (!probed){ vid.removeEventListener('seeked', onSeek); startLoop(); } }, 500);
+      }
+
+      var ticking = false;
+      function update(){
+        ticking = false;
+        if (!dur || mode !== 'scrub') return;
+        var r = reel.getBoundingClientRect();
+        var range = Math.max(1, reel.offsetHeight - innerHeight);
+        var prog = Math.min(1, Math.max(0, -r.top / range));
+        try { vid.currentTime = prog * (dur - 0.05); } catch(e){}
+      }
+      function onScroll(){ if (!ticking){ ticking = true; requestAnimationFrame(update); } }
+      window.addEventListener('resize', function(){ if (mode === 'scrub') update(); }, { passive: true });
+
+      // 動画がビューに入って初めて起動(データ節約＆自動再生の確実性)
+      var startObs = new IntersectionObserver(function(es){
+        es.forEach(function(e){
+          if (e.isIntersecting){
+            startObs.disconnect();
+            var go = function(){ startLoop(); probeScrub(); };
+            if (vid.readyState >= 2) go(); else vid.addEventListener('canplay', go, { once: true });
+          }
+        });
+      }, { threshold: .01 });
+      startObs.observe(reel);
+    })();
   </script>
 </body>
 </html>
