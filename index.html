@@ -212,6 +212,32 @@
   .h480 img{height:480px}
   .h420 img{height:420px}
 
+  /* ---------- works: 出自ノート & ライトボックス ---------- */
+  .works-note{margin:-26px 0 34px;font-family:var(--mono);font-size:10.5px;line-height:2;letter-spacing:.18em;color:var(--muted)}
+  .works-note b{color:var(--accent);font-weight:500}
+  .card{cursor:pointer}
+  .lb{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;
+    background:rgba(11,10,9,.93);backdrop-filter:blur(10px)}
+  .lb.open{display:flex}
+  .lb figure{margin:0;max-width:min(92vw,1100px)}
+  .lb img{max-width:100%;max-height:calc(88vh - 92px);object-fit:contain;display:block;margin:0 auto;
+    border:1px solid var(--line-soft);background:var(--panel-2)}
+  .lb figcaption{display:flex;flex-wrap:wrap;gap:8px 26px;align-items:baseline;padding:18px 2px 0;justify-content:center}
+  .lb .t{font-weight:700;font-size:17px;letter-spacing:.1em}
+  .lb .m{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--muted)}
+  .lb .m b{color:var(--accent);font-weight:500}
+  .lb button{position:fixed;background:rgba(11,10,9,.6);border:1px solid var(--line);color:var(--muted);
+    font-family:var(--mono);cursor:pointer;transition:color .2s,border-color .2s;display:grid;place-items:center}
+  .lb button:hover{color:var(--ink);border-color:var(--ink)}
+  .lb .x{top:20px;right:20px;width:46px;height:46px;font-size:15px}
+  .lb .prev,.lb .next{top:50%;transform:translateY(-50%);width:44px;height:68px;font-size:17px}
+  .lb .prev{left:14px}
+  .lb .next{right:14px}
+  @media (max-width:860px){
+    .lb .prev{left:4px}.lb .next{right:4px}
+    .lb figcaption{padding-bottom:76px}
+  }
+
   /* ---------- color dna ---------- */
   .dna{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:44px;align-items:center}
   .dna-stage{position:relative;background:#FCFBF9;border:1px solid var(--line-soft);height:640px;overflow:hidden}
@@ -353,8 +379,8 @@
       <div class="veil" aria-hidden="true"></div>
       <div class="reel-copy" id="reelCopy">
         <p class="k">750°C — 7 HOURS</p>
-        <h2>窯の中で、<br>イメージは戻れなくなる。</h2>
-        <p>REGEN: DISABLED — 複製可能性 ∞ → 0</p>
+        <h2>焼いたら、<br>もう戻せない。</h2>
+        <p>窯の中で画像は陶に固定される — REGEN: DISABLED / 複製可能性 ∞ → 0</p>
       </div>
     </div>
   </section>
@@ -362,6 +388,7 @@
   <!-- 01 WORKS -->
   <section id="works" class="block first" data-screen-label="01 WORKS">
     <div class="head"><span class="num">01</span><h2>WORKS</h2><span class="note">ARCHIVE // ALL SPECIMENS: FIRED</span></div>
+    <p class="works-note"><b>ALL CHARACTERS: ORIGINAL</b> — 登場するキャラクターはすべてAIで生成したオリジナル。既存アニメからの引用ではありません。<br>クリックで拡大・作品データを表示。</p>
     <div class="works-grid" id="worksGrid"></div>
   </section>
 
@@ -397,6 +424,8 @@
         <i>&gt;</i> ただし窯だけが、結果に後戻りを許さない。<br>
         <i>&gt;</i> _<br>
         <i>&gt;</i> <b>画像を焼くとは、消せるものを、消せなくする行為。</b><br>
+        <i>&gt;</i> _<br>
+        <i>&gt;</i> HALは、既存アニメの引用ではない。<b>AIで生成したオリジナルの人格</b>だ。<br>
         <i>&gt;</i> _<br>
         <i>&gt;</i> 窯から出す、その瞬間。<br>
         <i>&gt;</i> AIが生成した画像に土の力でエイジングがかかり、<b>一点物になる</b>——<br>
@@ -442,16 +471,35 @@
     </div>
   </footer>
 
-  <script src="assets/works-data.js?v=2"></script>
+  <!-- LIGHTBOX(作品拡大) -->
+  <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="作品の拡大表示">
+    <figure>
+      <img id="lbImg" alt="">
+      <figcaption><span class="t" id="lbTitle"></span><span class="m" id="lbMeta"></span></figcaption>
+    </figure>
+    <button class="x" id="lbClose" aria-label="閉じる">✕</button>
+    <button class="prev" id="lbPrev" aria-label="前の作品">←</button>
+    <button class="next" id="lbNext" aria-label="次の作品">→</button>
+  </div>
+
+  <script src="assets/works-data.js?v=3"></script>
   <script>
     // ---- WORKS: assets/works-data.js から描画(admin.html で編集可能) ----
+    var LB_SLIDES = []; // ライトボックス用スライド(全景+任意のディテール)
     (function(){
       // 7枚周期のモザイクパターン(大=span4 / 小=span2、行内で高さを揃える)
       var PATTERN = ['col4 h480','col2 h480','col2 h420','col2 h420','col2 h420','col2 h480','col4 h480'];
       var grid = document.getElementById('worksGrid');
       (window.WORKS || []).forEach(function(w, i){
+        var mainSlide = LB_SLIDES.length;
+        LB_SLIDES.push({ img: w.img, w: w, label: '' });
+        if (w.detail) LB_SLIDES.push({ img: w.detail, w: w, label: 'DETAIL' });
+
         var fig = document.createElement('figure');
         fig.className = 'card ' + PATTERN[i % PATTERN.length];
+        fig.tabIndex = 0;
+        fig.setAttribute('role', 'button');
+        fig.setAttribute('aria-label', w.title + ' を拡大表示');
         var img = document.createElement('img');
         img.src = w.img;
         img.alt = 'HAL — ' + w.title;
@@ -462,12 +510,58 @@
         var b = document.createElement('b');
         b.textContent = w.title;
         var span = document.createElement('span');
-        span.textContent = w.cap || 'FIRED';
+        span.textContent = (w.year ? w.year + ' — ' : '') + (w.cap || 'FIRED');
         cap.appendChild(b); cap.appendChild(span);
         fig.appendChild(img); fig.appendChild(cap);
+        fig.addEventListener('click', function(){ lbOpen(mainSlide); });
+        fig.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); lbOpen(mainSlide); } });
         grid.appendChild(fig);
       });
     })();
+
+    // ---- LIGHTBOX ----
+    var lb = document.getElementById('lb'), lbImg = document.getElementById('lbImg'),
+        lbTitle = document.getElementById('lbTitle'), lbMeta = document.getElementById('lbMeta'),
+        lbIndex = 0;
+    function lbShow(i){
+      lbIndex = (i + LB_SLIDES.length) % LB_SLIDES.length;
+      var s = LB_SLIDES[lbIndex], w = s.w;
+      lbImg.src = s.img;
+      lbImg.alt = 'HAL — ' + w.title + (s.label ? '(ディテール)' : '');
+      lbTitle.textContent = w.title;
+      var meta = [];
+      if (s.label) meta.push(s.label);
+      if (w.year) meta.push(w.year);
+      if (w.technique) meta.push(w.technique);
+      if (w.size) meta.push(w.size);
+      meta.push(w.cap || 'FIRED');
+      lbMeta.innerHTML = '';
+      meta.forEach(function(m, mi){
+        if (mi){ var sep = document.createElement('b'); sep.textContent = ' / '; lbMeta.appendChild(sep); }
+        lbMeta.appendChild(document.createTextNode(m));
+      });
+    }
+    function lbOpen(i){ lbShow(i); lb.classList.add('open'); document.body.style.overflow = 'hidden'; document.getElementById('lbClose').focus(); }
+    function lbCloseFn(){ lb.classList.remove('open'); document.body.style.overflow = ''; }
+    document.getElementById('lbClose').addEventListener('click', lbCloseFn);
+    document.getElementById('lbPrev').addEventListener('click', function(){ lbShow(lbIndex - 1); });
+    document.getElementById('lbNext').addEventListener('click', function(){ lbShow(lbIndex + 1); });
+    lb.addEventListener('click', function(e){ if (e.target === lb) lbCloseFn(); });
+    document.addEventListener('keydown', function(e){
+      if (!lb.classList.contains('open')) return;
+      if (e.key === 'Escape') lbCloseFn();
+      if (e.key === 'ArrowLeft') lbShow(lbIndex - 1);
+      if (e.key === 'ArrowRight') lbShow(lbIndex + 1);
+    });
+    // スマホ: 左右スワイプで前後の作品へ
+    var lbTouchX = null;
+    lb.addEventListener('touchstart', function(e){ lbTouchX = e.touches[0].clientX; }, { passive: true });
+    lb.addEventListener('touchend', function(e){
+      if (lbTouchX === null) return;
+      var dx = e.changedTouches[0].clientX - lbTouchX;
+      if (Math.abs(dx) > 48) lbShow(lbIndex + (dx < 0 ? 1 : -1));
+      lbTouchX = null;
+    }, { passive: true });
 
     // ---- HERO: 表示位置を works-data.js から適用(admin.html で調整可能) ----
     if (window.SITE && window.SITE.hero && window.SITE.hero.pos) {

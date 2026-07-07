@@ -55,6 +55,14 @@
   .row.dragover{border-color:var(--accent)}
   .thumb{position:relative;width:150px;height:110px;background:var(--panel-2);overflow:hidden;cursor:pointer}
   .thumb.tall{height:190px}
+  .thumbcol{display:flex;flex-direction:column;gap:8px}
+  .thumb.mini{height:64px;border:1px dashed rgba(237,230,216,.2);display:grid;place-items:center;
+    font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--muted-2);text-align:center}
+  .thumb.mini.has{border-style:solid}
+  .thumb.mini img{position:absolute;inset:0}
+  .thumb.mini .clear{position:absolute;top:2px;right:2px;z-index:2;width:20px;height:20px;padding:0;
+    background:rgba(11,10,9,.8);border:1px solid var(--line);color:var(--muted);font-size:10px;cursor:pointer}
+  .thumb.mini .clear:hover{color:var(--accent);border-color:var(--accent)}
   .thumb img{width:100%;height:100%;object-fit:cover}
   .thumb .hint{position:absolute;inset:auto 0 0 0;padding:3px 6px;background:rgba(11,10,9,.72);
     font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--muted);text-align:center}
@@ -326,17 +334,49 @@ function renderWorks(){
   site.works.forEach((w, i) => {
     const row = document.createElement('div');
     row.className = 'row';
+
+    // サムネイル列: 全景(上) + ディテール(下・任意)
+    const col = document.createElement('div');
+    col.className = 'thumbcol';
     const { thumb, img } = mkThumb(w);
-    const fields = document.createElement('div');
-    fields.className = 'fields';
-    fields.appendChild(mkText('作品名', w.title, v => w.title = v));
-    fields.appendChild(mkText('キャプション', w.cap || 'FIRED', v => w.cap = v));
-    fields.appendChild(mkRange('表示位置(上↔下)', posPct(w.pos), v => { w.pos = 'center ' + v + '%'; img.style.objectPosition = w.pos; }));
-    bindDrop(row, async files => {
+    bindDrop(thumb, async files => {
       const path = await importImage(files[0]);
       if (path){ w.img = path; markDirty(); renderWorks(); }
     });
-    row.append(thumb, fields, mkOps(site.works, i, renderWorks, '「' + w.title + '」を一覧から削除しますか?'));
+    const mini = document.createElement('div');
+    mini.className = 'thumb mini' + (w.detail ? ' has' : '');
+    if (w.detail){
+      const dImg = document.createElement('img');
+      fileURL(w.detail).then(u => { if (u) dImg.src = u; });
+      const clear = document.createElement('button');
+      clear.className = 'clear'; clear.textContent = '×'; clear.title = 'ディテール画像を外す';
+      clear.addEventListener('click', e => { e.stopPropagation(); delete w.detail; markDirty(); renderWorks(); });
+      mini.append(dImg, clear);
+    } else {
+      mini.textContent = '＋ ディテール写真(任意)をドラッグ';
+    }
+    bindDrop(mini, async files => {
+      const path = await importImage(files[0]);
+      if (path){ w.detail = path; markDirty(); renderWorks(); }
+    });
+    col.append(thumb, mini);
+
+    const fields = document.createElement('div');
+    fields.className = 'fields';
+    fields.appendChild(mkText('作品名', w.title, v => w.title = v));
+    const pair1 = document.createElement('div');
+    pair1.className = 'pair';
+    pair1.appendChild(mkText('制作年', w.year || '', v => { if (v) w.year = v; else delete w.year; }));
+    pair1.appendChild(mkText('寸法(例: H24 × W18 cm)', w.size || '', v => { if (v) w.size = v; else delete w.size; }));
+    fields.appendChild(pair1);
+    const pair2 = document.createElement('div');
+    pair2.className = 'pair';
+    pair2.appendChild(mkText('技法', w.technique || '', v => { if (v) w.technique = v; else delete w.technique; }));
+    pair2.appendChild(mkText('キャプション', w.cap || 'FIRED', v => w.cap = v));
+    fields.appendChild(pair2);
+    fields.appendChild(mkRange('表示位置(上↔下)', posPct(w.pos), v => { w.pos = 'center ' + v + '%'; img.style.objectPosition = w.pos; }));
+
+    row.append(col, fields, mkOps(site.works, i, renderWorks, '「' + w.title + '」を一覧から削除しますか?'));
     listEl.appendChild(row);
   });
 }
