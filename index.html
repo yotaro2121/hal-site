@@ -712,8 +712,11 @@
         btn.innerHTML = en ? '<b>日本語</b>' : '<b>EN</b>';
         try { localStorage.setItem('hal-lang', lang); } catch(e){}
       }
-      var saved = 'ja';
-      try { saved = localStorage.getItem('hal-lang') || 'ja'; } catch(e){}
+      // 初期言語: 手動切替の記憶があればそれを優先。なければブラウザ言語で自動判定
+      // (日本語環境 → 日本語 / それ以外 → 英語)
+      var saved = null;
+      try { saved = localStorage.getItem('hal-lang'); } catch(e){}
+      if (!saved) saved = (navigator.language || 'ja').toLowerCase().indexOf('ja') === 0 ? 'ja' : 'en';
       apply(saved);
       btn.addEventListener('click', function(){
         apply(document.documentElement.getAttribute('data-lang') === 'en' ? 'ja' : 'en');
