@@ -156,12 +156,14 @@
   <span class="sp"></span>
   <a class="btn" href="index.html" target="_blank">サイトを確認</a>
   <button class="btn primary" id="saveBtn">保存</button>
+  <button class="btn primary" id="publishBtn" hidden>公開</button>
 </div>
 
 <script>
 let root = null;
 let site = null;   // { hero, works, dna }
 let dirty = false;
+let serverMode = false;  // admin-server.py 経由ならフォルダ選択なしで直接読み書き
 const $ = id => document.getElementById(id);
 const status = (msg, cls) => { const s = $('status'); s.textContent = msg; s.className = cls || ''; };
 const DEFAULT_DNA = [
@@ -175,29 +177,45 @@ if (!window.showDirectoryPicker) {
 
 function posPct(pos){ return parseInt((pos || 'center 50%').match(/(\d+)%$/)?.[1] ?? 50); }
 
+// works-data.js のテキストを読み込んで編集画面を開く(新旧両形式対応)
+function loadSiteFromText(text){
+  const objStart = text.indexOf('{'), arrStart = text.indexOf('[');
+  if (objStart >= 0 && (arrStart < 0 || objStart < arrStart)) {
+    site = JSON.parse(text.slice(objStart, text.lastIndexOf('}') + 1));
+  } else {
+    site = { hero: { pos: 'center 62%' },
+             works: JSON.parse(text.slice(arrStart, text.lastIndexOf(']') + 1)),
+             dna: DEFAULT_DNA };
+  }
+  site.hero = site.hero || { pos: 'center 62%' };
+  site.works = site.works || [];
+  site.dna = (site.dna && site.dna.length) ? site.dna : DEFAULT_DNA.slice();
+  $('intro').hidden = true;
+  $('editor').hidden = false;
+  $('savebar').classList.add('show');
+  status('読み込み完了 — WORKS ' + site.works.length + ' / DNA ' + site.dna.length, 'ok');
+  renderHero(); renderWorks(); renderDna();
+}
+
+// admin-server.py 経由で開いていれば、フォルダ選択なしで自動読み込み
+(async () => {
+  try {
+    if (location.protocol !== 'http:') return;
+    const ping = await fetch('/api/ping');
+    if (!ping.ok) return;
+    serverMode = true;
+    const text = await (await fetch('assets/works-data.js?t=' + Date.now())).text();
+    loadSiteFromText(text);
+    $('publishBtn').hidden = false;
+  } catch {}
+})();
+
 $('openBtn').addEventListener('click', async () => {
   try {
     root = await showDirectoryPicker({ id: 'hal-site', mode: 'readwrite' });
     const assets = await root.getDirectoryHandle('assets');
     const fh = await assets.getFileHandle('works-data.js');
-    const text = await (await fh.getFile()).text();
-    // 新形式(SITEオブジェクト)と旧形式(WORKS配列)の両対応
-    const objStart = text.indexOf('{'), arrStart = text.indexOf('[');
-    if (objStart >= 0 && (arrStart < 0 || objStart < arrStart)) {
-      site = JSON.parse(text.slice(objStart, text.lastIndexOf('}') + 1));
-    } else {
-      site = { hero: { pos: 'center 62%' },
-               works: JSON.parse(text.slice(arrStart, text.lastIndexOf(']') + 1)),
-               dna: DEFAULT_DNA };
-    }
-    site.hero = site.hero || { pos: 'center 62%' };
-    site.works = site.works || [];
-    site.dna = (site.dna && site.dna.length) ? site.dna : DEFAULT_DNA.slice();
-    $('intro').hidden = true;
-    $('editor').hidden = false;
-    $('savebar').classList.add('show');
-    status('読み込み完了 — WORKS ' + site.works.length + ' / DNA ' + site.dna.length, 'ok');
-    renderHero(); renderWorks(); renderDna();
+    loadSiteFromText(await (await fh.getFile()).text());
   } catch (e) {
     if (e.name === 'AbortError') return;
     status('読み込み失敗: hal-site フォルダを選んでいますか?', 'err');
@@ -207,6 +225,7 @@ $('openBtn').addEventListener('click', async () => {
 function markDirty(){ dirty = true; $('savenote').textContent = '未保存の変更があります — 保存を押してください'; }
 
 async function fileURL(path){
+  if (serverMode) return path + '?t=' + Date.now();  // サーバーがそのまま配信できる
   try {
     let dir = root;
     const parts = path.split('/');
@@ -237,13 +256,19 @@ async function importImage(file, opts){
         .replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40) || 'work';
       path = 'assets/works/' + base + '-' + Date.now().toString(36) + '.jpg';
     }
-    let dir = root;
-    const parts = path.split('/');
-    for (const p of parts.slice(0, -1)) dir = await dir.getDirectoryHandle(p, { create: true });
-    const fh = await dir.getFileHandle(parts.at(-1), { create: true });
-    const wr = await fh.createWritable();
-    await wr.write(blob);
-    await wr.close();
+    if (serverMode) {
+      const dataUrl = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(blob); });
+      const resp = await (await fetch('/api/image', { method: 'POST', body: JSON.stringify({ path, dataUrl }) })).json();
+      if (!resp.ok) throw new Error(resp.error || '保存エラー');
+    } else {
+      let dir = root;
+      const parts = path.split('/');
+      for (const p of parts.slice(0, -1)) dir = await dir.getDirectoryHandle(p, { create: true });
+      const fh = await dir.getFileHandle(parts.at(-1), { create: true });
+      const wr = await fh.createWritable();
+      await wr.write(blob);
+      await wr.close();
+    }
     status('画像を取り込みました', 'ok');
     return path;
   } catch (e) {
@@ -438,17 +463,39 @@ async function addDna(files){
 $('saveBtn').addEventListener('click', async () => {
   try {
     if (!site.dna.length){ status('COLOR DNA は最低1つ必要です', 'err'); return; }
-    const assets = await root.getDirectoryHandle('assets');
-    const fh = await assets.getFileHandle('works-data.js', { create: true });
-    const wr = await fh.createWritable();
-    await wr.write('window.SITE = ' + JSON.stringify(site, null, 2) + ';\nwindow.WORKS = window.SITE.works;\n');
-    await wr.close();
+    const text = 'window.SITE = ' + JSON.stringify(site, null, 2) + ';\nwindow.WORKS = window.SITE.works;\n';
+    if (serverMode) {
+      const resp = await (await fetch('/api/save', { method: 'POST', body: JSON.stringify({ path: 'assets/works-data.js', text }) })).json();
+      if (!resp.ok) throw new Error(resp.error || '保存エラー');
+    } else {
+      const assets = await root.getDirectoryHandle('assets');
+      const fh = await assets.getFileHandle('works-data.js', { create: true });
+      const wr = await fh.createWritable();
+      await wr.write(text);
+      await wr.close();
+    }
     dirty = false;
-    $('savenote').textContent = '保存済み — 「公開.command」で公開できます';
+    $('savenote').textContent = serverMode ? '保存済み — 「公開」ボタンでサイトに反映できます' : '保存済み — 「公開.command」で公開できます';
     status('保存しました(WORKS ' + site.works.length + ' / DNA ' + site.dna.length + ')', 'ok');
   } catch (e) {
     status('保存に失敗: ' + e.message, 'err');
   }
+});
+
+// ---------- 公開(サーバーモードのみ) ----------
+$('publishBtn').addEventListener('click', async () => {
+  if (dirty) { status('先に「保存」を押してください', 'err'); return; }
+  const btn = $('publishBtn');
+  btn.disabled = true; btn.textContent = '公開中…';
+  try {
+    const resp = await (await fetch('/api/publish', { method: 'POST', body: '{}' })).json();
+    if (!resp.ok) throw new Error(resp.error || '公開エラー');
+    status(resp.message, 'ok');
+    $('savenote').textContent = resp.message;
+  } catch (e) {
+    status('公開に失敗: ' + e.message, 'err');
+  }
+  btn.disabled = false; btn.textContent = '公開';
 });
 
 window.addEventListener('beforeunload', e => { if (dirty) e.preventDefault(); });
