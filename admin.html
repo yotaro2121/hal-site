@@ -128,7 +128,7 @@
     <div class="row" id="heroRow">
       <div class="thumb tall" id="heroThumb">
         <img id="heroImg" alt="ヒーロー画像">
-        <div class="hint">画像をドラッグで差し替え</div>
+        <div class="hint">クリックかドラッグで差し替え</div>
       </div>
       <div class="fields">
         <label>表示位置(上↔下)<input type="range" id="heroPos" min="0" max="100"></label>
@@ -287,6 +287,17 @@ function bindDrop(el, onFiles){
   });
 }
 
+// クリックでもファイル選択ダイアログから画像を選べるようにする
+function bindPick(el, onFiles){
+  el.style.cursor = 'pointer';
+  el.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file'; input.accept = 'image/*';
+    input.addEventListener('change', () => { if (input.files.length) onFiles([...input.files]); });
+    input.click();
+  });
+}
+
 // ---------- HERO ----------
 function renderHero(){
   const img = $('heroImg');
@@ -300,10 +311,12 @@ function renderHero(){
     markDirty();
   };
 }
-bindDrop($('heroRow'), async files => {
+async function replaceHero(files){
   const path = await importImage(files[0], { max: 2400, quality: .85, fixedPath: 'assets/hero-2x.jpg' });
   if (path){ renderHero(); markDirty(); $('savenote').textContent = 'ヒーロー画像を差し替えました — 保存を押してください'; }
-});
+}
+bindDrop($('heroRow'), replaceHero);
+bindPick($('heroThumb'), replaceHero);
 
 // ---------- 汎用行ビルダー ----------
 function mkText(labelText, value, oninput){
@@ -347,7 +360,7 @@ function mkThumb(item, extraPos){
   fileURL(item.img).then(u => { if (u) img.src = u; });
   if (item.pos) img.style.objectPosition = item.pos;
   const hint = document.createElement('div');
-  hint.className = 'hint'; hint.textContent = '画像をドラッグで差し替え';
+  hint.className = 'hint'; hint.textContent = 'クリックかドラッグで差し替え';
   thumb.append(img, hint);
   return { thumb, img };
 }
@@ -364,10 +377,12 @@ function renderWorks(){
     const col = document.createElement('div');
     col.className = 'thumbcol';
     const { thumb, img } = mkThumb(w);
-    bindDrop(thumb, async files => {
+    const replaceMain = async files => {
       const path = await importImage(files[0]);
       if (path){ w.img = path; markDirty(); renderWorks(); }
-    });
+    };
+    bindDrop(thumb, replaceMain);
+    bindPick(thumb, replaceMain);
     const mini = document.createElement('div');
     mini.className = 'thumb mini' + (w.detail ? ' has' : '');
     if (w.detail){
@@ -378,12 +393,14 @@ function renderWorks(){
       clear.addEventListener('click', e => { e.stopPropagation(); delete w.detail; markDirty(); renderWorks(); });
       mini.append(dImg, clear);
     } else {
-      mini.textContent = '＋ ディテール写真(任意)をドラッグ';
+      mini.textContent = '＋ ディテール写真(任意)— クリックかドラッグ';
     }
-    bindDrop(mini, async files => {
+    const replaceDetail = async files => {
       const path = await importImage(files[0]);
       if (path){ w.detail = path; markDirty(); renderWorks(); }
-    });
+    };
+    bindDrop(mini, replaceDetail);
+    bindPick(mini, replaceDetail);
     col.append(thumb, mini);
 
     const fields = document.createElement('div');
@@ -440,10 +457,12 @@ function renderDna(){
     pair.appendChild(colorLabel);
     fields.appendChild(pair);
     fields.appendChild(mkRange('表示位置(上↔下)', posPct(d.pos), v => { d.pos = 'center ' + v + '%'; img.style.objectPosition = d.pos; }));
-    bindDrop(row, async files => {
+    const replaceDnaImg = async files => {
       const path = await importImage(files[0]);
       if (path){ d.img = path; markDirty(); renderDna(); }
-    });
+    };
+    bindDrop(row, replaceDnaImg);
+    bindPick(thumb, replaceDnaImg);
     row.append(thumb, fields, mkOps(site.dna, i, renderDna, '「' + d.kanji + '」を一覧から削除しますか?'));
     listEl.appendChild(row);
   });
