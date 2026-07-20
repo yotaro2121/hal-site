@@ -155,6 +155,8 @@
   .btn-ghost{border:1px solid rgba(237,230,216,.28);color:var(--muted)}
   .btn-ghost:hover{border-color:var(--ink);color:var(--ink)}
   .hero-sign{margin:52px 0 0;font-size:13px;line-height:1.9;letter-spacing:.1em;color:var(--muted);animation:fadeUp .8s .6s cubic-bezier(.2,.7,.2,1) both}
+  .hero-next{margin:26px 0 0;font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;color:var(--ink-2);animation:fadeUp .8s .55s cubic-bezier(.2,.7,.2,1) both}
+  .hero-next i{font-style:normal;color:var(--accent);border:1px solid var(--accent);padding:3px 8px;margin-right:10px;font-size:10px;letter-spacing:.22em}
   .hero-sign b{color:var(--ink);font-size:15px}
   .hero-sign span{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em}
   .hero-fig{position:relative;z-index:1;margin:0;overflow:hidden;animation:fadeIn 1.2s .15s both}
@@ -301,6 +303,9 @@
   footer.contact .mail{display:inline-block;margin-top:26px;font-family:var(--mono);font-size:15px;letter-spacing:.14em;color:var(--accent);text-decoration:underline;text-underline-offset:6px;transition:color .2s}
   footer.contact .mail:hover{color:var(--ink)}
   footer.contact .desc{margin:34px 0 0;max-width:44em;font-size:13px;line-height:2.4;letter-spacing:.06em;color:var(--muted);text-wrap:pretty}
+  footer.contact .presskit{margin:26px 0 0}
+  footer.contact .presskit a{display:inline-block;padding:12px 22px;border:1px solid rgba(237,230,216,.28);font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--ink);text-decoration:none;transition:border-color .2s}
+  footer.contact .presskit a:hover{border-color:var(--accent)}
   footer.contact .foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;margin-top:80px;padding-top:22px;border-top:1px solid rgba(237,230,216,.1);font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--muted-2)}
   footer.contact .foot a{color:var(--muted);text-decoration:none;transition:color .2s}
   footer.contact .foot a:hover{color:var(--ink)}
@@ -545,6 +550,23 @@
         el.innerHTML = rich(ja);
         if (en) el.setAttribute('data-en', rich(en));
       }
+      // NEXT: CVで「予定」にチェックされた行から、直近の予定をヒーローに表示
+      (function(){
+        var soon = [];
+        (T.cv || []).forEach(function(b){ (b.rows || []).forEach(function(r){ if (r.soon && r.ja) soon.push(r); }); });
+        var now = new Date();
+        var cur = now.getFullYear() + '.' + ('0' + (now.getMonth() + 1)).slice(-2);
+        soon = soon.filter(function(r){ return String(r.y) >= cur.slice(0, String(r.y).length); });
+        if (!soon.length) return;
+        soon.sort(function(a, b){ return String(a.y).localeCompare(String(b.y)); });
+        var n = soon[0];
+        var cta = document.querySelector('.hero-cta');
+        if (!cta) return;
+        var el = document.createElement('p');
+        el.className = 'hero-next';
+        el.innerHTML = '<i>NEXT</i> ' + esc(n.y) + ' — <span data-en="' + esc(n.en || n.ja).replace(/"/g, '&quot;') + '">' + esc(n.ja) + '</span>';
+        cta.parentNode.insertBefore(el, cta.nextSibling);
+      })();
       // ヒーロー・リール・注記・コンタクト
       if (T.hero){
         setBi('heroKicker', T.hero.kicker);
@@ -568,6 +590,14 @@
         setBi('contactDesc', T.contact.descJa, T.contact.descEn);
         var ig = document.getElementById('igLink');
         if (ig && T.contact.igLabel){ ig.textContent = T.contact.igLabel; if (T.contact.igUrl) ig.href = T.contact.igUrl; }
+        // ギャラリー向け資料PDF(管理画面でアップロードすると表示される)
+        var desc = document.getElementById('contactDesc');
+        if (desc && T.contact.kitUrl){
+          var kit = document.createElement('p');
+          kit.className = 'presskit';
+          kit.innerHTML = '<a href="' + esc(T.contact.kitUrl) + '" target="_blank" rel="noopener" data-en="PRESS / GALLERY KIT (PDF)">PRESS / GALLERY KIT — 作品資料PDF</a>';
+          desc.parentNode.insertBefore(kit, desc.nextSibling);
+        }
       }
       // PROFILE
       var prof = document.getElementById('profileBody');

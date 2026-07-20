@@ -213,6 +213,16 @@
           </div>
         </div>
       </div>
+
+      <div class="sect"><span class="num">07</span><h2>PRESS KIT</h2><span class="hint">ギャラリー・ブランド向けの作品資料PDF</span></div>
+      <div class="row trow">
+        <div class="fields">
+          <p class="note" id="kitStatus" style="margin:0;font-size:12px"></p>
+          <div class="dropzone" id="kitDrop">＋ ここに資料PDFをドラッグ(またはクリックで選択)</div>
+          <input type="file" id="kitPick" accept=".pdf,application/pdf" hidden>
+          <button class="btn small" id="kitRemove" hidden>サイトからリンクを外す</button>
+        </div>
+      </div>
     </div>
 
   </section>
@@ -308,7 +318,7 @@ function loadTextFromText(text){
     wireText('tContactEn', textData.contact, 'descEn');
     wireText('tIgUrl', textData.contact, 'igUrl');
     wireText('tIgLabel', textData.contact, 'igLabel');
-    renderStatement(); renderCv(); renderProfile();
+    renderStatement(); renderCv(); renderProfile(); updateKitUI();
   } catch { textData = null; }
 }
 
@@ -706,6 +716,72 @@ function renderProfile(){
   add.className = 'btn small addline'; add.textContent = '＋ 項目を追加';
   add.addEventListener('click', () => { textData.profile.push({ dt: 'NEW', ja: '' }); markDirty(); renderProfile(); });
   listEl.appendChild(add);
+}
+
+// ---------- PRESS KIT(資料PDF)----------
+function updateKitUI(){
+  const has = !!(textData && textData.contact && textData.contact.kitUrl);
+  $('kitStatus').innerHTML = has
+    ? 'サイトのCONTACTに「PRESS / GALLERY KIT」のダウンロードボタンが<b>表示されます</b>。新しいPDFを入れると差し替えられます。'
+    : '未設定 — PDFを入れると、CONTACTにダウンロードボタンが出ます(作品リストアプリで作ったPDFがおすすめ)。';
+  $('kitRemove').hidden = !has;
+}
+async function saveKit(file){
+  if (!file || !(file.type === 'application/pdf' || /\.pdf$/i.test(file.name))){ status('PDFファイルを選んでください', 'err'); return; }
+  if (!serverMode){ status('PDFの登録は「HAL作品管理.command」から開いたときに使えます', 'err'); return; }
+  status('PDFを保存中…');
+  const dataUrl = await readAsDataURL(file);
+  const resp = await (await fetch('/api/image', { method: 'POST', body: JSON.stringify({ path: 'assets/press-kit.pdf', dataUrl }) })).json();
+  if (!resp.ok){ status('PDF保存に失敗: ' + (resp.error || ''), 'err'); return; }
+  textData.contact.kitUrl = 'assets/press-kit.pdf';
+  markDirty(); updateKitUI();
+  status('PDFを登録しました — 「保存」→「公開」でサイトに反映されます', 'ok');
+}
+$('kitDrop').addEventListener('dragover', e => { e.preventDefault(); $('kitDrop').classList.add('dragover'); });
+$('kitDrop').addEventListener('dragleave', () => $('kitDrop').classList.remove('dragover'));
+$('kitDrop').addEventListener('drop', e => { e.preventDefault(); $('kitDrop').classList.remove('dragover'); saveKit(e.dataTransfer.files[0]); });
+$('kitDrop').addEventListener('click', () => $('kitPick').click());
+$('kitPick').addEventListener('change', e => saveKit(e.target.files[0]));
+$('kitRemove').addEventListener('click', () => {
+  delete textData.contact.kitUrl;
+  markDirty(); updateKitUI();
+  status('リンクを外しました — 「保存」→「公開」で反映(PDFファイル自体は残ります)', 'ok');
+});
+
+// ---------- 音声入力(欄をクリック → 🎤 → 話す)----------
+let lastField = null;
+document.addEventListener('focusin', e => {
+  if (e.target.matches('input[type=text], textarea')) lastField = e.target;
+});
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (SR) {
+  const mic = document.createElement('button');
+  mic.className = 'btn small'; mic.id = 'micBtn'; mic.textContent = '🎤 音声入力';
+  mic.title = '入力したい欄をクリックしてから押すと、話した内容がその欄に入ります';
+  const savebar = document.querySelector('.savebar');
+  savebar.insertBefore(mic, savebar.firstChild);
+  let rec = null;
+  mic.addEventListener('click', () => {
+    if (rec) { rec.stop(); return; }
+    if (!lastField) { status('先に入力したい欄をクリックしてから 🎤 を押してください', 'err'); return; }
+    const target = lastField;
+    rec = new SR();
+    rec.lang = 'ja-JP';
+    rec.interimResults = false;
+    mic.textContent = '🎤 聞き取り中…(話し終わると自動で止まります)';
+    mic.style.borderColor = 'var(--accent)';
+    rec.onresult = e => {
+      const heard = [...e.results].map(r => r[0].transcript).join('');
+      target.value = target.value ? target.value + heard : heard;
+      target.dispatchEvent(new Event('input'));
+      target.focus();
+    };
+    rec.onerror = e => {
+      status(e.error === 'not-allowed' ? 'マイクの使用が許可されていません — アドレスバー左の設定から許可してください' : '音声入力エラー: ' + e.error, 'err');
+    };
+    rec.onend = () => { rec = null; mic.textContent = '🎤 音声入力'; mic.style.borderColor = ''; };
+    rec.start();
+  });
 }
 
 // ---------- 保存 ----------
