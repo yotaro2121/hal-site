@@ -28,6 +28,11 @@ class Handler(SimpleHTTPRequestHandler):
     def log_message(self, *a):  # ターミナルを静かに保つ
         pass
 
+    def end_headers(self):
+        # ブラウザに古い画面をキャッシュさせない(管理画面が更新されたら必ず最新を表示)
+        self.send_header("Cache-Control", "no-store")
+        super().end_headers()
+
     def _json(self, code, obj):
         body = json.dumps(obj, ensure_ascii=False).encode()
         self.send_response(code)
