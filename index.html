@@ -272,11 +272,13 @@
   .chip.active{border:2px solid var(--accent);opacity:1;filter:none}
 
   /* ---------- statement ---------- */
-  .statement-body{max-width:620px;margin:0 auto;padding:14px 0 4px}
-  .statement-body p{margin:0 0 2.4em;font-size:15px;line-height:3;letter-spacing:.1em;color:var(--ink-2);text-wrap:pretty}
-  .statement-body p:last-of-type{margin-bottom:0}
-  .statement-body b{font-weight:700;color:var(--ink)}
-  .statement-sign{margin:56px 0 0;font-family:var(--mono);font-size:10.5px;letter-spacing:.28em;color:var(--muted);text-align:right}
+  .terminal{max-width:960px;margin:0 auto;background:var(--panel-2);border:1px solid rgba(237,230,216,.1)}
+  .terminal .bar{display:flex;gap:16px;padding:12px 22px;border-bottom:1px solid rgba(237,230,216,.1);font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--muted)}
+  .terminal p{margin:0;padding:38px 42px 44px;font-family:var(--mono);font-size:14px;line-height:2.7;letter-spacing:.06em;color:var(--ink-2)}
+  .terminal i{font-style:normal;color:var(--accent)}
+  .terminal b{color:var(--ink)}
+  .terminal em{font-style:normal;color:var(--accent)}
+  @media (max-width:700px){ .terminal p{padding:26px 20px 32px;font-size:13px} }
   .cursor{color:var(--accent);animation:blink 1.1s steps(1) infinite}
 
   /* ---------- exhibitions ---------- */
@@ -427,14 +429,21 @@
 
   <!-- 03 STATEMENT -->
   <section id="statement" class="block" data-screen-label="03 STATEMENT">
-    <div class="head"><span class="num">03</span><h2>STATEMENT</h2><span class="note">CONCEPT</span></div>
-    <div class="statement-body" id="statementBody">
-      <p><span data-en="I was born in Bizen, and grew up inside the memory of a craft — thousands of years of exchange between human beings, earth, and fire. The sense that lives in the hands; the resolve to accept whatever happens inside the kiln. That is a “real” that cannot be copied — it dwells only in the body.">私は備前に生まれた。数千年、人間が土と火と交わしてきた技術の記憶の中で育った。手が覚えている感覚、窯の中で起きることを引き受ける覚悟。それは複製できない、身体にしか宿らない「本物」だ。</span></p>
-      <p><span data-en="The world now overflows with things and images. The line between what is good and what is not grows harder to see, and AI — generating images without end — only accelerates the flood.">いま、世界は物と画像で溢れている。良いものと、そうでないものの境目は見えにくくなり、AIは無限に画像を生成することで、その洪水をさらに加速させている。</span></p>
-      <p><span data-en="Out of that flood, I choose a single image. An anime character born from AI — a “fake” that one click should be able to erase — is transferred onto a vessel made with real craft, and fired at 750°C. The moment it passes through fire, it becomes irrevocable: the only one of its kind in this world. &lt;b&gt;Of all that flows endlessly past, I stop just one.&lt;/b&gt;">その洪水の中から、私は一枚の画像を選ぶ。AIが生んだアニメのキャラクター——ワンクリックで消せるはずの「ニセモノ」を、本物の技術で作った器に転写し、750℃で焼き付ける。火を通った瞬間、それは二度と取り消せない、この世界に一つだけの実在になる。<b>無限に流れていくものを、一つだけ、止める。</b></span></p>
-      <p><span data-en="A fake cannot shine on its own. Behind the AI image lie the stories we received from anime and manga — “real things” humans made in earnest — and beneath it, the vessel carries the craft of earth and fire. &lt;b&gt;Only pressed between these two authenticities does the fake begin to glow.&lt;/b&gt;">ニセモノは、それだけでは輝けない。AIの画像の背後には、私たちがアニメや漫画から受け取った物語——人間が本気で作った「本物」——が堆積し、それを受け止める器には、土と火の技術がある。<b>ニセモノは、二つのホンモノに挟まれて初めて光る。</b></span></p>
-      <p><span data-en="That is why I fire images. In an overflowing world, it is my way of continuing the craft — asking again, on the surface of ceramics, what is real.">だから私は「画像を、焼く」。溢れる世界の中で、本物とは何かを陶の上で問い直す、私なりの工芸の続きだ。</span></p>
-      <p class="statement-sign">ISEZAKI YOTARO</p>
+    <div class="head"><span class="num">03</span><h2>STATEMENT</h2><span class="note">CONCEPT — KILN_LOG</span></div>
+    <div class="terminal" id="statementBody">
+      <div class="bar"><span>KILN_LOG.txt</span><span>—</span><span>ISEZAKI_YOTARO</span></div>
+      <p>
+        <i>&gt;</i> <span data-en="I was born in Bizen, and grew up inside the memory of a craft — thousands of years of exchange between human beings, earth, and fire. The sense that lives in the hands; the resolve to accept whatever happens inside the kiln. That is a “real” that cannot be copied — it dwells only in the body.">私は備前に生まれた。数千年、人間が土と火と交わしてきた技術の記憶の中で育った。手が覚えている感覚、窯の中で起きることを引き受ける覚悟。それは複製できない、身体にしか宿らない「本物」だ。</span><br>
+        <i>&gt;</i> _<br>
+        <i>&gt;</i> <span data-en="The world now overflows with things and images. The line between what is good and what is not grows harder to see, and AI — generating images without end — only accelerates the flood.">いま、世界は物と画像で溢れている。良いものと、そうでないものの境目は見えにくくなり、AIは無限に画像を生成することで、その洪水をさらに加速させている。</span><br>
+        <i>&gt;</i> _<br>
+        <i>&gt;</i> <span data-en="Out of that flood, I choose a single image. An anime character born from AI — a “fake” that one click should be able to erase — is transferred onto a vessel made with real craft, and fired at 750°C. The moment it passes through fire, it becomes irrevocable: the only one of its kind in this world. &lt;b&gt;Of all that flows endlessly past, I stop just one.&lt;/b&gt;">その洪水の中から、私は一枚の画像を選ぶ。AIが生んだアニメのキャラクター——ワンクリックで消せるはずの「ニセモノ」を、本物の技術で作った器に転写し、750℃で焼き付ける。火を通った瞬間、それは二度と取り消せない、この世界に一つだけの実在になる。<b>無限に流れていくものを、一つだけ、止める。</b></span><br>
+        <i>&gt;</i> _<br>
+        <i>&gt;</i> <span data-en="A fake cannot shine on its own. Behind the AI image lie the stories we received from anime and manga — “real things” humans made in earnest — and beneath it, the vessel carries the craft of earth and fire. &lt;b&gt;Only pressed between these two authenticities does the fake begin to glow.&lt;/b&gt;">ニセモノは、それだけでは輝けない。AIの画像の背後には、私たちがアニメや漫画から受け取った物語——人間が本気で作った「本物」——が堆積し、それを受け止める器には、土と火の技術がある。<b>ニセモノは、二つのホンモノに挟まれて初めて光る。</b></span><br>
+        <i>&gt;</i> _<br>
+        <i>&gt;</i> <span data-en="That is why I fire images. In an overflowing world, it is my way of continuing the craft — asking again, on the surface of ceramics, what is real.">だから私は「画像を、焼く」。溢れる世界の中で、本物とは何かを陶の上で問い直す、私なりの工芸の続きだ。</span><br>
+        <i>&gt;</i> REGENERATION: <em>PERMANENTLY DISABLED</em><span class="cursor">▊</span>
+      </p>
     </div>
   </section>
 
@@ -570,9 +579,11 @@
       }
       var stmt = document.getElementById('statementBody');
       if (stmt && T.statement && T.statement.length){
-        stmt.innerHTML = T.statement.map(function(p){
-          return '<p><span data-en="' + rich(p.en || p.ja).replace(/"/g, '&quot;') + '">' + rich(p.ja) + '</span></p>';
-        }).join('') + '<p class="statement-sign">ISEZAKI YOTARO</p>';
+        var lines = T.statement.map(function(p){
+          return '<i>&gt;</i> <span data-en="' + rich(p.en || p.ja).replace(/"/g, '&quot;') + '">' + rich(p.ja) + '</span>';
+        }).join('<br><i>&gt;</i> _<br>');
+        stmt.innerHTML = '<div class="bar"><span>KILN_LOG.txt</span><span>—</span><span>ISEZAKI_YOTARO</span></div>'
+          + '<p>' + lines + '<br><i>&gt;</i> REGENERATION: <em>PERMANENTLY DISABLED</em><span class="cursor">▊</span></p>';
       }
       var cv = document.getElementById('cvBody');
       if (cv && T.cv && T.cv.length){
@@ -730,7 +741,7 @@
         });
       }, { threshold: .12, rootMargin: '0px 0px -6% 0px' });
       // 単独要素は遅延なし、まとまって現れる行リストだけ時差をつける
-      var solo = ['.head', '#worksGrid', '.dna-stage', '.dna > div:last-child', '.statement-body'];
+      var solo = ['.head', '#worksGrid', '.dna-stage', '.dna > div:last-child', '.terminal'];
       var staggered = ['.exh', 'dl.profile .row'];
       solo.forEach(function(sel){
         document.querySelectorAll(sel).forEach(function(el){
