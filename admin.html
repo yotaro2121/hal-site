@@ -142,8 +142,42 @@
         <p class="note" style="margin:0;font-size:12px">差し替えると <b>assets/hero-2x.jpg</b> が上書きされます(自動で最大2400pxに最適化)。SNSカード用のOG画像は変わらないので、変えたい場合は Claude Code に依頼してください。</p>
       </div>
     </div>
+    <div class="row trow textonly" hidden>
+      <div class="fields">
+        <label>英字キッカー(見出しの上)<input type="text" id="tKicker"></label>
+        <label style="align-items:flex-start">説明文(日本語)<textarea id="tLedeJa" rows="4"></textarea></label>
+        <label style="align-items:flex-start">説明文(ENGLISH)<textarea id="tLedeEn" rows="4"></textarea></label>
+        <label>壺のキャプション<input type="text" id="tCap"></label>
+        <div class="pair">
+          <label>署名(名前)<input type="text" id="tSignName"></label>
+          <label>署名(下の英字行)<input type="text" id="tSignSub"></label>
+        </div>
+        <p class="note" style="margin:0;font-size:12px">大見出し「画像を、焼く。」だけは専用フォントを使っているため、変えたいときは Claude Code に依頼してください。文中で <b>&lt;b&gt;太字&lt;/b&gt;</b>・<b>&lt;br&gt;</b>(改行)が使えます。欄を空にするとサイトは元の文に戻ります。</p>
+      </div>
+    </div>
+
+    <div class="textonly" hidden>
+      <div class="sect"><span class="num">00+</span><h2>REEL</h2><span class="hint">回る壺の動画に重なる文章</span></div>
+      <div class="row trow">
+        <div class="fields">
+          <label>小さい英字(上)<input type="text" id="tReelK"></label>
+          <div class="pair">
+            <label>見出し(日本語・&lt;br&gt;で改行)<input type="text" id="tReelTitleJa"></label>
+            <label>見出し(ENGLISH)<input type="text" id="tReelTitleEn"></label>
+          </div>
+          <label style="align-items:flex-start">本文(日本語)<textarea id="tReelBodyJa" rows="2"></textarea></label>
+          <label style="align-items:flex-start">本文(ENGLISH)<textarea id="tReelBodyEn" rows="2"></textarea></label>
+        </div>
+      </div>
+    </div>
 
     <div class="sect"><span class="num">01</span><h2>WORKS</h2><span class="hint">作品アーカイブ</span></div>
+    <div class="row trow textonly" hidden>
+      <div class="fields">
+        <label style="align-items:flex-start">冒頭の注記(日本語)<textarea id="tWorksNoteJa" rows="2"></textarea></label>
+        <label style="align-items:flex-start">冒頭の注記(ENGLISH)<textarea id="tWorksNoteEn" rows="2"></textarea></label>
+      </div>
+    </div>
     <div id="worksList"></div>
     <div class="dropzone" id="worksDrop">＋ ここに写真をドラッグ(またはクリックで選択)して作品を追加<br>
       <span style="font-family:var(--mono);font-size:10px;letter-spacing:.15em">大きい写真は自動で縮小・軽量化されます</span>
@@ -163,6 +197,22 @@
       <div class="sect"><span class="num">04</span><h2>CV</h2><span class="hint">略歴・展示・受賞 — 新しい行は各欄の「追加」で</span></div>
       <p class="note" style="font-size:12px;margin:0 0 14px">English が空欄の行は、英語表示でも日本語がそのまま出ます。「予定」にチェックすると FORTHCOMING のラベルが付きます。</p>
       <div id="cvList"></div>
+
+      <div class="sect"><span class="num">05</span><h2>PROFILE</h2><span class="hint">DOSSIER — 項目名(英字)+ 本文</span></div>
+      <div id="profileList"></div>
+
+      <div class="sect"><span class="num">06</span><h2>CONTACT</h2><span class="hint">メール・案内文・Instagram</span></div>
+      <div class="row trow">
+        <div class="fields">
+          <label>メールアドレス<input type="text" id="tEmail"></label>
+          <label style="align-items:flex-start">案内文(日本語)<textarea id="tContactJa" rows="2"></textarea></label>
+          <label style="align-items:flex-start">案内文(ENGLISH)<textarea id="tContactEn" rows="2"></textarea></label>
+          <div class="pair">
+            <label>Instagram URL<input type="text" id="tIgUrl"></label>
+            <label>Instagram 表示名<input type="text" id="tIgLabel"></label>
+          </div>
+        </div>
+      </div>
     </div>
 
   </section>
@@ -215,12 +265,50 @@ function loadSiteFromText(text){
   renderHero(); renderWorks(); renderDna();
 }
 
+// 入力欄と textData のキーを結びつける(空欄にするとキーを消す=サイトは元の文に戻る)
+function wireText(id, obj, key){
+  const el = $(id);
+  if (!el) return;
+  el.value = obj[key] || '';
+  el.addEventListener('input', () => {
+    if (el.value.trim()) obj[key] = el.value; else delete obj[key];
+    markDirty();
+  });
+}
+
 // 文章データ(site-text.js)のテキストを読み込んで編集欄を出す
 function loadTextFromText(text){
   try {
     textData = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1));
+    // 古いデータでも編集欄が出るように、足りない項目は空で用意する
+    textData.hero = textData.hero || {};
+    textData.reel = textData.reel || {};
+    textData.worksNote = textData.worksNote || {};
+    textData.contact = textData.contact || {};
+    textData.profile = textData.profile || [];
+    textData.statement = textData.statement || [];
+    textData.cv = textData.cv || [];
     $('textSections').hidden = false;
-    renderStatement(); renderCv();
+    document.querySelectorAll('.textonly').forEach(el => el.hidden = false);
+    wireText('tKicker', textData.hero, 'kicker');
+    wireText('tLedeJa', textData.hero, 'ledeJa');
+    wireText('tLedeEn', textData.hero, 'ledeEn');
+    wireText('tCap', textData.hero, 'cap');
+    wireText('tSignName', textData.hero, 'signName');
+    wireText('tSignSub', textData.hero, 'signSub');
+    wireText('tReelK', textData.reel, 'k');
+    wireText('tReelTitleJa', textData.reel, 'titleJa');
+    wireText('tReelTitleEn', textData.reel, 'titleEn');
+    wireText('tReelBodyJa', textData.reel, 'bodyJa');
+    wireText('tReelBodyEn', textData.reel, 'bodyEn');
+    wireText('tWorksNoteJa', textData.worksNote, 'ja');
+    wireText('tWorksNoteEn', textData.worksNote, 'en');
+    wireText('tEmail', textData.contact, 'email');
+    wireText('tContactJa', textData.contact, 'descJa');
+    wireText('tContactEn', textData.contact, 'descEn');
+    wireText('tIgUrl', textData.contact, 'igUrl');
+    wireText('tIgLabel', textData.contact, 'igLabel');
+    renderStatement(); renderCv(); renderProfile();
   } catch { textData = null; }
 }
 
@@ -595,6 +683,29 @@ function renderCv(){
       listEl.appendChild(row);
     });
   });
+}
+
+// ---------- PROFILE(項目リスト)----------
+function renderProfile(){
+  const listEl = $('profileList');
+  listEl.textContent = '';
+  textData.profile.forEach((r, i) => {
+    const row = document.createElement('div');
+    row.className = 'row trow';
+    const fields = document.createElement('div');
+    fields.className = 'fields';
+    const yl = mkText('項目名(英字)', r.dt, v => r.dt = v);
+    yl.style.maxWidth = '340px';
+    fields.appendChild(yl);
+    fields.appendChild(mkArea('本文(日本語)', r.ja, v => r.ja = v));
+    fields.appendChild(mkArea('本文(ENGLISH・空欄なら日本語のまま)', r.en, v => { if (v.trim()) r.en = v; else delete r.en; }));
+    row.append(fields, mkOps(textData.profile, i, renderProfile, '「' + r.dt + '」の項目を削除しますか?'));
+    listEl.appendChild(row);
+  });
+  const add = document.createElement('button');
+  add.className = 'btn small addline'; add.textContent = '＋ 項目を追加';
+  add.addEventListener('click', () => { textData.profile.push({ dt: 'NEW', ja: '' }); markDirty(); renderProfile(); });
+  listEl.appendChild(add);
 }
 
 // ---------- 保存 ----------
