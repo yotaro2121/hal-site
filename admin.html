@@ -72,6 +72,13 @@
     padding:9px 12px;font-family:var(--sans);font-size:14px;letter-spacing:.05em;min-width:0}
   .fields input[type=text]:focus{outline:none;border-color:var(--accent)}
   .fields input[type=range]{flex:1;accent-color:var(--accent)}
+  .fields input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px}
+  .fields textarea{flex:1;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);
+    padding:10px 12px;font-family:var(--sans);font-size:13.5px;line-height:1.9;letter-spacing:.05em;min-width:0;resize:vertical}
+  .fields textarea:focus{outline:none;border-color:var(--accent)}
+  .row.trow{grid-template-columns:1fr auto}
+  .cv-head{margin:26px 0 12px;font-family:var(--mono);font-size:11px;letter-spacing:.24em;color:var(--muted)}
+  .addline{margin:2px 0 10px}
   .fields input[type=color]{width:44px;height:30px;padding:0;border:1px solid var(--line);background:none;cursor:pointer}
   .fields .pair{display:flex;gap:14px}
   .fields .pair label{flex:1}
@@ -141,12 +148,22 @@
     <div class="dropzone" id="worksDrop">＋ ここに写真をドラッグ(またはクリックで選択)して作品を追加<br>
       <span style="font-family:var(--mono);font-size:10px;letter-spacing:.15em">大きい写真は自動で縮小・軽量化されます</span>
     </div>
-    <input type="file" id="worksPick" accept="image/*" multiple hidden>
+    <input type="file" id="worksPick" accept="image/*,.tif,.tiff,.heic,.heif" multiple hidden>
 
     <div class="sect"><span class="num">02</span><h2>COLOR DNA</h2><span class="hint">色ごとの検体 — 白背景の写真推奨</span></div>
     <div id="dnaList"></div>
     <div class="dropzone" id="dnaDrop">＋ ここに写真をドラッグ(またはクリックで選択)して色を追加</div>
-    <input type="file" id="dnaPick" accept="image/*" multiple hidden>
+    <input type="file" id="dnaPick" accept="image/*,.tif,.tiff,.heic,.heif" multiple hidden>
+
+    <div id="textSections" hidden>
+      <div class="sect"><span class="num">03</span><h2>STATEMENT</h2><span class="hint">コンセプト文 — 正本は concept.md</span></div>
+      <p class="note" style="font-size:12px;margin:0 0 14px">段落ごとに日本語と英語を編集できます。文中を <b>&lt;b&gt;</b> と <b>&lt;/b&gt;</b> で挟むと太字になります。大きく書き換えるときは concept.md の更新も Claude Code に頼んでください。</p>
+      <div id="stmtList"></div>
+
+      <div class="sect"><span class="num">04</span><h2>CV</h2><span class="hint">略歴・展示・受賞 — 新しい行は各欄の「追加」で</span></div>
+      <p class="note" style="font-size:12px;margin:0 0 14px">English が空欄の行は、英語表示でも日本語がそのまま出ます。「予定」にチェックすると FORTHCOMING のラベルが付きます。</p>
+      <div id="cvList"></div>
+    </div>
 
   </section>
 </main>
@@ -162,6 +179,7 @@
 <script>
 let root = null;
 let site = null;   // { hero, works, dna }
+let textData = null;  // { statement, cv } — assets/site-text.js の文章データ
 let dirty = false;
 let serverMode = false;  // admin-server.py 経由ならフォルダ選択なしで直接読み書き
 const $ = id => document.getElementById(id);
@@ -197,6 +215,15 @@ function loadSiteFromText(text){
   renderHero(); renderWorks(); renderDna();
 }
 
+// 文章データ(site-text.js)のテキストを読み込んで編集欄を出す
+function loadTextFromText(text){
+  try {
+    textData = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1));
+    $('textSections').hidden = false;
+    renderStatement(); renderCv();
+  } catch { textData = null; }
+}
+
 // admin-server.py 経由で開いていれば、フォルダ選択なしで自動読み込み
 (async () => {
   try {
@@ -206,6 +233,8 @@ function loadSiteFromText(text){
     serverMode = true;
     const text = await (await fetch('assets/works-data.js?t=' + Date.now())).text();
     loadSiteFromText(text);
+    const tr = await fetch('assets/site-text.js?t=' + Date.now());
+    if (tr.ok) loadTextFromText(await tr.text());
     $('publishBtn').hidden = false;
   } catch {}
 })();
@@ -216,6 +245,10 @@ $('openBtn').addEventListener('click', async () => {
     const assets = await root.getDirectoryHandle('assets');
     const fh = await assets.getFileHandle('works-data.js');
     loadSiteFromText(await (await fh.getFile()).text());
+    try {
+      const th = await assets.getFileHandle('site-text.js');
+      loadTextFromText(await (await th.getFile()).text());
+    } catch {}
   } catch (e) {
     if (e.name === 'AbortError') return;
     status('読み込み失敗: hal-site フォルダを選んでいますか?', 'err');
@@ -235,18 +268,33 @@ async function fileURL(path){
   } catch { return null; }
 }
 
+function readAsDataURL(fileOrBlob){
+  return new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(fileOrBlob); });
+}
+
 // 写真を縮小してJPEG保存。opts: {max, quality, fixedPath} fixedPath指定時はその場所に上書き
 async function importImage(file, opts){
   const o = Object.assign({ max: 1600, quality: .82, fixedPath: null }, opts);
   try {
     status('画像を取り込み中…');
-    const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
-    const scale = Math.min(1, o.max / Math.max(bmp.width, bmp.height));
-    const canvas = document.createElement('canvas');
-    canvas.width = Math.round(bmp.width * scale);
-    canvas.height = Math.round(bmp.height * scale);
-    canvas.getContext('2d').drawImage(bmp, 0, 0, canvas.width, canvas.height);
-    const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', o.quality));
+    let blob;
+    try {
+      const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+      const scale = Math.min(1, o.max / Math.max(bmp.width, bmp.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(bmp.width * scale);
+      canvas.height = Math.round(bmp.height * scale);
+      canvas.getContext('2d').drawImage(bmp, 0, 0, canvas.width, canvas.height);
+      blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', o.quality));
+    } catch (decodeErr) {
+      // TIFF/HEICなどブラウザが読めない形式は、サーバー(Mac標準のsips)でJPEGに変換
+      if (!serverMode) throw new Error('この形式の画像はここでは読めません。JPEGかPNGにしてお試しください');
+      status('画像を変換中…(TIFF/HEIC)');
+      const dataUrl = await readAsDataURL(file);
+      const resp = await (await fetch('/api/convert', { method: 'POST', body: JSON.stringify({ name: file.name, dataUrl, max: o.max }) })).json();
+      if (!resp.ok) throw new Error(resp.error || '変換エラー');
+      blob = await (await fetch(resp.dataUrl)).blob();
+    }
 
     let path;
     if (o.fixedPath) {
@@ -257,7 +305,7 @@ async function importImage(file, opts){
       path = 'assets/works/' + base + '-' + Date.now().toString(36) + '.jpg';
     }
     if (serverMode) {
-      const dataUrl = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(blob); });
+      const dataUrl = await readAsDataURL(blob);
       const resp = await (await fetch('/api/image', { method: 'POST', body: JSON.stringify({ path, dataUrl }) })).json();
       if (!resp.ok) throw new Error(resp.error || '保存エラー');
     } else {
@@ -277,12 +325,18 @@ async function importImage(file, opts){
   }
 }
 
+// 受け付ける画像: 一般的な形式 + TIFF/HEIC(サーバーでJPEGに自動変換される)
+const PICK_ACCEPT = 'image/*,.tif,.tiff,.heic,.heif';
+function isImageFile(f){
+  return f.type.startsWith('image/') || /\.(tif|tiff|heic|heif)$/i.test(f.name);
+}
+
 function bindDrop(el, onFiles){
   el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('dragover'); });
   el.addEventListener('dragleave', () => el.classList.remove('dragover'));
   el.addEventListener('drop', e => {
     e.preventDefault(); el.classList.remove('dragover');
-    const files = [...e.dataTransfer.files].filter(f => f.type.startsWith('image/'));
+    const files = [...e.dataTransfer.files].filter(isImageFile);
     if (files.length) onFiles(files);
   });
 }
@@ -292,7 +346,7 @@ function bindPick(el, onFiles){
   el.style.cursor = 'pointer';
   el.addEventListener('click', () => {
     const input = document.createElement('input');
-    input.type = 'file'; input.accept = 'image/*';
+    input.type = 'file'; input.accept = PICK_ACCEPT;
     input.addEventListener('change', () => { if (input.files.length) onFiles([...input.files]); });
     input.click();
   });
@@ -349,7 +403,7 @@ function mkOps(list, i, rerender, delMsg){
   ops.appendChild(mk('↑', '', () => { if (i > 0){ [list[i-1], list[i]] = [list[i], list[i-1]]; markDirty(); rerender(); } }));
   ops.appendChild(mk('↓', '', () => { if (i < list.length-1){ const t = list[i]; list[i] = list[i+1]; list[i+1] = t; markDirty(); rerender(); } }));
   ops.appendChild(mk('×', 'del', () => {
-    if (confirm(delMsg + '(画像ファイル自体は残ります)')){ list.splice(i, 1); markDirty(); rerender(); }
+    if (confirm(delMsg)){ list.splice(i, 1); markDirty(); rerender(); }
   }));
   return ops;
 }
@@ -418,7 +472,7 @@ function renderWorks(){
     fields.appendChild(pair2);
     fields.appendChild(mkRange('表示位置(上↔下)', posPct(w.pos), v => { w.pos = 'center ' + v + '%'; img.style.objectPosition = w.pos; }));
 
-    row.append(col, fields, mkOps(site.works, i, renderWorks, '「' + w.title + '」を一覧から削除しますか?'));
+    row.append(col, fields, mkOps(site.works, i, renderWorks, '「' + w.title + '」を一覧から削除しますか?(画像ファイル自体は残ります)'));
     listEl.appendChild(row);
   });
 }
@@ -463,7 +517,7 @@ function renderDna(){
     };
     bindDrop(row, replaceDnaImg);
     bindPick(thumb, replaceDnaImg);
-    row.append(thumb, fields, mkOps(site.dna, i, renderDna, '「' + d.kanji + '」を一覧から削除しますか?'));
+    row.append(thumb, fields, mkOps(site.dna, i, renderDna, '「' + d.kanji + '」を一覧から削除しますか?(画像ファイル自体は残ります)'));
     listEl.appendChild(row);
   });
 }
@@ -478,20 +532,100 @@ async function addDna(files){
   markDirty(); renderDna();
 }
 
+// ---------- STATEMENT(文章)----------
+function mkArea(labelText, value, oninput){
+  const label = document.createElement('label');
+  label.textContent = labelText;
+  const ta = document.createElement('textarea');
+  ta.value = value || ''; ta.rows = 3;
+  ta.addEventListener('input', () => { oninput(ta.value); markDirty(); });
+  label.appendChild(ta);
+  return label;
+}
+function renderStatement(){
+  const listEl = $('stmtList');
+  listEl.textContent = '';
+  textData.statement.forEach((p, i) => {
+    const row = document.createElement('div');
+    row.className = 'row trow';
+    const fields = document.createElement('div');
+    fields.className = 'fields';
+    fields.appendChild(mkArea('日本語', p.ja, v => p.ja = v));
+    fields.appendChild(mkArea('ENGLISH', p.en, v => p.en = v));
+    row.append(fields, mkOps(textData.statement, i, renderStatement, '段落 ' + (i + 1) + ' を削除しますか?'));
+    listEl.appendChild(row);
+  });
+  const add = document.createElement('button');
+  add.className = 'btn small addline'; add.textContent = '＋ 段落を追加';
+  add.addEventListener('click', () => { textData.statement.push({ ja: '', en: '' }); markDirty(); renderStatement(); });
+  listEl.appendChild(add);
+}
+
+// ---------- CV(略歴・展示・受賞)----------
+function renderCv(){
+  const listEl = $('cvList');
+  listEl.textContent = '';
+  textData.cv.forEach(block => {
+    const h = document.createElement('div');
+    h.className = 'cv-head'; h.textContent = block.titleJa;
+    listEl.appendChild(h);
+    const add = document.createElement('button');
+    add.className = 'btn small addline'; add.textContent = '＋ 行を追加(一番上に入ります)';
+    add.addEventListener('click', () => { block.rows.unshift({ y: String(new Date().getFullYear()), ja: '' }); markDirty(); renderCv(); });
+    listEl.appendChild(add);
+    block.rows.forEach((r, i) => {
+      const row = document.createElement('div');
+      row.className = 'row trow';
+      const fields = document.createElement('div');
+      fields.className = 'fields';
+      const pair1 = document.createElement('div'); pair1.className = 'pair';
+      const yl = mkText('年', r.y, v => r.y = v); yl.style.flex = '0 0 170px';
+      pair1.append(yl, mkText('内容(日本語)', r.ja, v => r.ja = v));
+      const pair2 = document.createElement('div'); pair2.className = 'pair';
+      pair2.appendChild(mkText('ENGLISH(空欄なら日本語のまま)', r.en || '', v => { if (v) r.en = v; else delete r.en; }));
+      const soonLabel = document.createElement('label');
+      soonLabel.style.flex = '0 0 auto';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox'; cb.checked = !!r.soon;
+      cb.addEventListener('change', () => { if (cb.checked) r.soon = true; else delete r.soon; markDirty(); });
+      soonLabel.append(cb, document.createTextNode('「予定」表示'));
+      pair2.appendChild(soonLabel);
+      fields.append(pair1, pair2);
+      row.append(fields, mkOps(block.rows, i, renderCv, '「' + (r.ja || r.y) + '」をCVから削除しますか?'));
+      listEl.appendChild(row);
+    });
+  });
+}
+
 // ---------- 保存 ----------
 $('saveBtn').addEventListener('click', async () => {
   try {
     if (!site.dna.length){ status('COLOR DNA は最低1つ必要です', 'err'); return; }
     const text = 'window.SITE = ' + JSON.stringify(site, null, 2) + ';\nwindow.WORKS = window.SITE.works;\n';
+    // 文章データも一緒に保存(コメントに波括弧を書かないこと — 読み込み時の目印に使うため)
+    const textJs = textData ? '// サイトの文章データ(ステートメント・CV)。管理画面 admin.html から編集される。\n'
+      + '// ja = 日本語 / en = 英語(空欄なら日本語がそのまま表示)。<b>〜</b> は太字。\n'
+      + '// ※ステートメントの正本は concept.md — 大きく変えたら concept.md の更新も忘れずに。\n'
+      + 'window.TEXT = ' + JSON.stringify(textData, null, 2) + ';\n' : null;
     if (serverMode) {
       const resp = await (await fetch('/api/save', { method: 'POST', body: JSON.stringify({ path: 'assets/works-data.js', text }) })).json();
       if (!resp.ok) throw new Error(resp.error || '保存エラー');
+      if (textJs) {
+        const r2 = await (await fetch('/api/save', { method: 'POST', body: JSON.stringify({ path: 'assets/site-text.js', text: textJs }) })).json();
+        if (!r2.ok) throw new Error(r2.error || '文章の保存エラー');
+      }
     } else {
       const assets = await root.getDirectoryHandle('assets');
       const fh = await assets.getFileHandle('works-data.js', { create: true });
       const wr = await fh.createWritable();
       await wr.write(text);
       await wr.close();
+      if (textJs) {
+        const th = await assets.getFileHandle('site-text.js', { create: true });
+        const tw = await th.createWritable();
+        await tw.write(textJs);
+        await tw.close();
+      }
     }
     dirty = false;
     $('savenote').textContent = serverMode ? '保存済み — 「公開」ボタンでサイトに反映できます' : '保存済み — 「公開.command」で公開できます';

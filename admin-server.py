@@ -64,6 +64,24 @@ class Handler(SimpleHTTPRequestHandler):
                     f.write(raw)
                 return self._json(200, {"ok": True})
 
+            if self.path == "/api/convert":  # TIFF/HEIC等をJPEGに変換(Mac標準のsipsを使用)
+                import tempfile
+                raw = base64.b64decode(data["dataUrl"].split(",", 1)[1])
+                maxpx = str(int(data.get("max", 1600)))
+                with tempfile.TemporaryDirectory() as td:
+                    src = os.path.join(td, "in" + os.path.splitext(data.get("name", "x.tif"))[1])
+                    dst = os.path.join(td, "out.jpg")
+                    with open(src, "wb") as f:
+                        f.write(raw)
+                    r = subprocess.run(["sips", "-s", "format", "jpeg", "-s", "formatOptions", "82",
+                                        "--resampleHeightWidthMax", maxpx, src, "--out", dst],
+                                       capture_output=True, text=True)
+                    if r.returncode != 0 or not os.path.exists(dst):
+                        return self._json(422, {"ok": False, "error": "この形式の画像は変換できませんでした"})
+                    with open(dst, "rb") as f:
+                        jpg = f.read()
+                return self._json(200, {"ok": True, "dataUrl": "data:image/jpeg;base64," + base64.b64encode(jpg).decode()})
+
             if self.path == "/api/publish":  # git add/commit/push で公開
                 def run(*cmd):
                     return subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)

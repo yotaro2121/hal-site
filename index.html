@@ -428,7 +428,7 @@
   <!-- 03 STATEMENT -->
   <section id="statement" class="block" data-screen-label="03 STATEMENT">
     <div class="head"><span class="num">03</span><h2>STATEMENT</h2><span class="note">CONCEPT</span></div>
-    <div class="statement-body">
+    <div class="statement-body" id="statementBody">
       <p><span data-en="I was born in Bizen, and grew up inside the memory of a craft — thousands of years of exchange between human beings, earth, and fire. The sense that lives in the hands; the resolve to accept whatever happens inside the kiln. That is a “real” that cannot be copied — it dwells only in the body.">私は備前に生まれた。数千年、人間が土と火と交わしてきた技術の記憶の中で育った。手が覚えている感覚、窯の中で起きることを引き受ける覚悟。それは複製できない、身体にしか宿らない「本物」だ。</span></p>
       <p><span data-en="The world now overflows with things and images. The line between what is good and what is not grows harder to see, and AI — generating images without end — only accelerates the flood.">いま、世界は物と画像で溢れている。良いものと、そうでないものの境目は見えにくくなり、AIは無限に画像を生成することで、その洪水をさらに加速させている。</span></p>
       <p><span data-en="Out of that flood, I choose a single image. An anime character born from AI — a “fake” that one click should be able to erase — is transferred onto a vessel made with real craft, and fired at 750°C. The moment it passes through fire, it becomes irrevocable: the only one of its kind in this world. &lt;b&gt;Of all that flows endlessly past, I stop just one.&lt;/b&gt;">その洪水の中から、私は一枚の画像を選ぶ。AIが生んだアニメのキャラクター——ワンクリックで消せるはずの「ニセモノ」を、本物の技術で作った器に転写し、750℃で焼き付ける。火を通った瞬間、それは二度と取り消せない、この世界に一つだけの実在になる。<b>無限に流れていくものを、一つだけ、止める。</b></span></p>
@@ -441,7 +441,7 @@
   <!-- 04 CV -->
   <section id="cv" class="block" data-screen-label="04 CV">
     <div class="head" style="margin-bottom:34px"><span class="num">04</span><h2>CV</h2><span class="note">CURRICULUM VITAE</span></div>
-    <div class="cv">
+    <div class="cv" id="cvBody">
 
       <div class="cv-block">
         <h3 data-en="BIOGRAPHY">略歴 — BIOGRAPHY</h3>
@@ -519,6 +519,36 @@
   </div>
 
   <script src="assets/works-data.js?v=3"></script>
+  <script src="assets/site-text.js?v=1"></script>
+  <script>
+    // ---- STATEMENT / CV: assets/site-text.js から描画(admin.html で編集可能) ----
+    // site-text.js が読めない場合は HTML に書かれた既存の内容がそのまま残る
+    (function(){
+      var T = window.TEXT;
+      if (!T) return;
+      function esc(s){ var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+      // 太字 <b> だけ許可して他のタグは無効化
+      function rich(s){ return esc(s).replace(/&lt;b&gt;/g, '<b>').replace(/&lt;\/b&gt;/g, '</b>'); }
+      var stmt = document.getElementById('statementBody');
+      if (stmt && T.statement && T.statement.length){
+        stmt.innerHTML = T.statement.map(function(p){
+          return '<p><span data-en="' + rich(p.en || p.ja).replace(/"/g, '&quot;') + '">' + rich(p.ja) + '</span></p>';
+        }).join('') + '<p class="statement-sign">ISEZAKI YOTARO</p>';
+      }
+      var cv = document.getElementById('cvBody');
+      if (cv && T.cv && T.cv.length){
+        cv.innerHTML = T.cv.map(function(block){
+          var rows = (block.rows || []).map(function(r){
+            var body = '<span data-en="' + esc(r.en || r.ja).replace(/"/g, '&quot;') + '">' + esc(r.ja) + '</span>';
+            if (r.soon) body = '<span class="v">' + body + '<span class="soon" data-en="FORTHCOMING">予定</span></span>';
+            else body = body.replace('<span data-en', '<span class="v" data-en');
+            return '<div class="cv-row"><span class="y">' + esc(r.y) + '</span>' + body + '</div>';
+          }).join('');
+          return '<div class="cv-block"><h3 data-en="' + esc(block.titleEn || block.titleJa).replace(/"/g, '&quot;') + '">' + esc(block.titleJa) + '</h3>' + rows + '</div>';
+        }).join('');
+      }
+    })();
+  </script>
   <script>
     // ---- WORKS: assets/works-data.js から描画(admin.html で編集可能) ----
     var LB_SLIDES = []; // ライトボックス用スライド(全景+任意のディテール)
