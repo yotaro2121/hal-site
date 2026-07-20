@@ -8,7 +8,9 @@
 2. 写真をドラッグして追加/差し替え(トップの壺=HERO・WORKS・COLOR DNA すべて対応)、作品名・色・表示位置を編集、↑↓で並べ替え
 3. 「保存」→「公開」を押す → 1〜2分で公開URLに反映
 
-仕組み: .command が `admin-server.py`(ローカル専用サーバー、127.0.0.1:8765)を起動し、admin.html がサーバーモードで動く。保存は `/api/save`・`/api/image`、公開は `/api/publish`(git add/commit/push)。従来の「フォルダを開く」+`公開.command` も残っているので、サーバーが動かないときの予備手段として使える。
+仕組み: .command が `admin-server.py`(ローカル専用サーバー、127.0.0.1:8765)を起動し、admin.html がサーバーモードで動く。保存は `/api/save`・`/api/image`、公開は `/api/publish`(git add/commit/push)、TIFF/HEIC は `/api/convert`(macOS の sips)で JPEG に自動変換。従来の「フォルダを開く」+`公開.command` も残っているので、サーバーが動かないときの予備手段として使える。
+
+管理画面で編集できるもの: HERO / WORKS / COLOR DNA(画像はクリックでもドラッグでも差し替え可)+ **STATEMENT と CV の文章**(日本語/英語、データは `assets/site-text.js`)。index.html は site-text.js から STATEMENT・CV を描画する(site-text.js が無い場合は HTML 内の静的な文章にフォールバック)。
 
 写真は自動で縮小・軽量化されるので、カメラの写真をそのまま入れて大丈夫です。
 細かい変更(文章の書き換え・デザイン調整など)は Claude Code に「〇〇して」と頼めば対応できます。
