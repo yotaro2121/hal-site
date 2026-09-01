@@ -13,14 +13,6 @@ window.SITE = {
       "size": "h18 × w33.5 × d23 cm"
     },
     {
-      "img": "assets/isezaki_IY_23_1.jpg",
-      "title": "HAL へラメ平茶碗",
-      "cap": "OVERGLAZE TRANSFER // FIRED",
-      "pos": "center 50%",
-      "year": "2026",
-      "technique": "オーバーグレーズ転写"
-    },
-    {
       "img": "assets/isezaki_IY_29_1.jpg",
       "title": "HAL 薪窯面取掛花",
       "cap": "OVERGLAZE TRANSFER // FIRED",
@@ -46,6 +38,12 @@ window.SITE = {
       "size": "h9.5 × w32.5 × d18.5 cm"
     },
     {
+      "img": "assets/works/isezaki_IY_6_1-mtiwo3r5.jpg",
+      "title": "無題",
+      "cap": "FIRED",
+      "pos": "center 50%"
+    },
+    {
       "img": "assets/isezaki_IY_44_1.jpg",
       "title": "HAL mimituki 掛花",
       "cap": "OVERGLAZE TRANSFER // FIRED",
@@ -55,13 +53,12 @@ window.SITE = {
       "size": "h15 × w16.5 × d11.5 cm"
     },
     {
-      "img": "assets/isezaki_IY_27_1.jpg",
-      "title": "HAL 面取掛花 緑",
+      "img": "assets/isezaki_IY_23_1.jpg",
+      "title": "HAL へラメ平茶碗",
       "cap": "OVERGLAZE TRANSFER // FIRED",
-      "pos": "center 40%",
+      "pos": "center 50%",
       "year": "2026",
-      "technique": "オーバーグレーズ転写",
-      "size": "h12.5 × w9 × d9 cm"
+      "technique": "オーバーグレーズ転写"
     },
     {
       "img": "assets/works/hibi-02.jpg",
