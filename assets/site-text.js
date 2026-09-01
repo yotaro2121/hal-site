@@ -75,7 +75,7 @@ window.TEXT = {
     "email": "youta976@gmail.com",
     "descJa": "作品のご購入は取扱ギャラリーおよび展覧会会場にて。ブランド・IPとのコラボレーションのご相談も受け付けています——貴社のアイコンを、二度と再生成できない一点物の文脈へ。",
     "descEn": "Works are available through representing galleries and at exhibition venues. Inquiries for brand / IP collaborations are also welcome — placing your icon into the context of a single object that can never be regenerated.",
-    "photoCredit": "Photo: 水犀 / Suisai",
+    "photoCredit": "Photo: 水犀 / mizusai",
     "igUrl": "https://www.instagram.com/youtarou21/",
     "igLabel": "INSTAGRAM — @youtarou21"
   },

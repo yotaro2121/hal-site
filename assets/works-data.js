@@ -10,7 +10,8 @@ window.SITE = {
       "pos": "center 46%",
       "year": "2026",
       "technique": "オーバーグレーズ転写",
-      "size": "h18 × w33.5 × d23 cm"
+      "size": "h18 × w33.5 × d23 cm",
+      "source": "assets/works/hal1990kiiro-mtix6tg8.jpg"
     },
     {
       "img": "assets/isezaki_IY_29_1.jpg",
@@ -18,7 +19,8 @@ window.SITE = {
       "cap": "OVERGLAZE TRANSFER // FIRED",
       "pos": "center 50%",
       "year": "2026",
-      "technique": "オーバーグレーズ転写"
+      "technique": "オーバーグレーズ転写",
+      "source": "assets/works/hal-mtix6zb6.jpg"
     },
     {
       "img": "assets/isezaki_IY_36_2_1.jpg",
@@ -26,7 +28,8 @@ window.SITE = {
       "cap": "OVERGLAZE TRANSFER // FIRED",
       "pos": "center 50%",
       "year": "2026",
-      "technique": "オーバーグレーズ転写"
+      "technique": "オーバーグレーズ転写",
+      "source": "assets/works/IMG_1559-mtix73vo.jpg"
     },
     {
       "img": "assets/isezaki_IY_11_1.jpg",
@@ -35,13 +38,15 @@ window.SITE = {
       "pos": "center 50%",
       "year": "2026",
       "technique": "オーバーグレーズ転写",
-      "size": "h9.5 × w32.5 × d18.5 cm"
+      "size": "h9.5 × w32.5 × d18.5 cm",
+      "source": "assets/works/2026-05-13132245-mtix78x4.jpg"
     },
     {
       "img": "assets/works/isezaki_IY_6_1-mtiwo3r5.jpg",
       "title": "無題",
       "cap": "FIRED",
-      "pos": "center 50%"
+      "pos": "center 50%",
+      "source": "assets/works/halyuugimidori-mtix7grv.jpg"
     },
     {
       "img": "assets/isezaki_IY_44_1.jpg",
@@ -50,7 +55,8 @@ window.SITE = {
       "pos": "center 50%",
       "year": "2026",
       "technique": "オーバーグレーズ転写",
-      "size": "h15 × w16.5 × d11.5 cm"
+      "size": "h15 × w16.5 × d11.5 cm",
+      "source": "assets/works/yotaro_httpssmjrunZRkKK7h7pw8_zuuhl82_---mtix9gy6.jpg"
     },
     {
       "img": "assets/isezaki_IY_23_1.jpg",
@@ -65,25 +71,43 @@ window.SITE = {
       "title": "日々",
       "cap": "FIRED",
       "pos": "center 50%",
-      "year": "2025"
+      "year": "2025",
+      "source": "assets/works/yotaro_httpssmjrunZRkKK7h7pw8__--ar_11_--mtix99mj.jpg"
     },
     {
       "img": "assets/works/isezaki_IY_8_5-mtiwkgqz.jpg",
       "title": "無題",
       "cap": "FIRED",
-      "pos": "center 50%"
+      "pos": "center 50%",
+      "source": "assets/works/IMG_9544-mtix94iq.jpg"
     },
     {
       "img": "assets/works/isezaki_IY_20_1-mtiwly6s.jpg",
       "title": "無題",
       "cap": "FIRED",
-      "pos": "center 50%"
+      "pos": "center 50%",
+      "source": "assets/works/IMG_9544-mtix8xi6.jpg"
     },
     {
-      "img": "assets/works/isezaki_IY_1_2-mtiwmd3s.jpg",
+      "img": "assets/works/isezaki_IY_3_59-mtix4y2n.jpg",
       "title": "無題",
       "cap": "FIRED",
-      "pos": "center 50%"
+      "pos": "center 50%",
+      "source": "assets/works/_2026_7_1-mtix8r72.jpg"
+    },
+    {
+      "img": "assets/works/isezaki_IY_3_64-mtix7zvt.jpg",
+      "title": "無題",
+      "cap": "FIRED",
+      "pos": "center 50%",
+      "source": "assets/works/halyuugimidori-mtix8lju.jpg"
+    },
+    {
+      "img": "assets/works/isezaki_IY_7_2-mtix8an9.jpg",
+      "title": "無題",
+      "cap": "FIRED",
+      "pos": "center 50%",
+      "source": "assets/works/hal2020ao-mtix8i3g.jpg"
     }
   ],
   "dna": [
