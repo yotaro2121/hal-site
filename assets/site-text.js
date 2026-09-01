@@ -2,10 +2,18 @@
 // ja = 日本語 / en = 英語(空欄なら日本語がそのまま表示)。<b>〜</b> は太字。
 // ※ステートメントの正本は concept.md — 大きく変えたら concept.md の更新も忘れずに。
 window.TEXT = {
+  "style": {
+    "sectionNumbers": false,
+    "marquee": false
+  },
+  "notes": {
+    "works": "ARCHIVE",
+    "profile": "DOSSIER"
+  },
   "hero": {
     "kicker": "IMAGES, FIRED — /HAL/",
-    "ledeJa": "物と画像が溢れ、AIがその洪水を加速させる時代に、「本物」とは何か。私は無限に生成される画像から一枚を選び、土と火の技術で作った器に750℃で焼き付ける。消せるはずのニセモノは、人間が作った物語と工芸の技術——二つのホンモノに挟まれ、二度と取り消せない一つの実在になる。「画像を、焼く」とは、溢れる世界で本物を問い直す行為だ。",
-    "ledeEn": "In an age overflowing with things and images — a flood AI only accelerates — what is real? I choose a single image from the endless stream of generation and fire it at 750°C onto a vessel built with the craft of earth and fire. A fake that could have been erased is pressed between two authenticities — stories humans made in earnest, and the techniques of craft — and becomes one irrevocable existence. To fire an image is to ask, again, what is real in an overflowing world.",
+    "ledeJa": "AIが生んだ画像を、土と火で、二度と取り消せないものにする。",
+    "ledeEn": "An image born from AI, made irrevocable by earth and fire.",
     "cap": "壺 <s>— HAL</s><br>750°C / 7H — <b>REGEN: DISABLED</b>",
     "signName": "伊勢崎 陽太郎",
     "signSub": "ISEZAKI YOTARO — CERAMIC ARTIST / TAJIMI, JP"

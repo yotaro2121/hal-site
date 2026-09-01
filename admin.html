@@ -131,6 +131,20 @@
 
   <section id="editor" hidden>
 
+    <div class="textonly" hidden>
+      <div class="sect"><h2>見た目のスイッチ</h2><span class="hint">チェックを入れると元の見た目に戻ります</span></div>
+      <div class="row trow">
+        <div class="fields">
+          <label style="justify-content:flex-start"><input type="checkbox" id="tStyleNums">章番号(01〜06)を表示する</label>
+          <label style="justify-content:flex-start"><input type="checkbox" id="tStyleMarquee">流れるテロップを表示する</label>
+          <div class="pair">
+            <label>WORKS の小見出し<input type="text" id="tNoteWorks"></label>
+            <label>PROFILE の小見出し<input type="text" id="tNoteProfile"></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="sect"><span class="num">00</span><h2>HERO</h2><span class="hint">トップの壺 — 差し替えは高解像度の写真推奨</span></div>
     <div class="row" id="heroRow">
       <div class="thumb tall" id="heroThumb">
@@ -324,6 +338,15 @@ function loadTextFromText(text){
     wireText('tReelTitleEn', textData.reel, 'titleEn');
     wireText('tReelBodyJa', textData.reel, 'bodyJa');
     wireText('tReelBodyEn', textData.reel, 'bodyEn');
+    textData.style = textData.style || {};
+    textData.notes = textData.notes || {};
+    [['tStyleNums','sectionNumbers'],['tStyleMarquee','marquee']].forEach(function(p){
+      const el = $(p[0]);
+      el.checked = textData.style[p[1]] === true;
+      el.addEventListener('change', () => { textData.style[p[1]] = el.checked; markDirty(); });
+    });
+    wireText('tNoteWorks', textData.notes, 'works');
+    wireText('tNoteProfile', textData.notes, 'profile');
     textData.dna = textData.dna || {};
     wireText('tDnaTitle', textData.dna, 'title');
     wireText('tDnaNoteJa', textData.dna, 'noteJa');
