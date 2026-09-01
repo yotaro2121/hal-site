@@ -5,46 +5,63 @@ window.SITE = {
   "works": [
     {
       "img": "assets/works/isezaki_IY_5_1-mrs56wev.jpg",
-      "title": "HAL menntori",
+      "title": "HAL MENTORI",
       "cap": "OVERGLAZE TRANSFER // FIRED",
       "pos": "center 42%",
-      "year": "2026"
+      "year": "2026",
+      "technique": "オーバーグレーズ転写",
+      "size": "h18 × w33.5 × d23 cm"
     },
     {
       "img": "assets/isezaki_IY_23_1.jpg",
-      "title": "耳付",
-      "cap": "FIRED",
-      "pos": "center 50%"
+      "title": "HAL へラメ平茶碗",
+      "cap": "OVERGLAZE TRANSFER // FIRED",
+      "pos": "center 50%",
+      "year": "2026",
+      "technique": "オーバーグレーズ転写"
     },
     {
       "img": "assets/isezaki_IY_29_1.jpg",
-      "title": "湯呑",
-      "cap": "FIRED",
-      "pos": "center 50%"
+      "title": "HAL 薪窯面取掛花",
+      "cap": "OVERGLAZE TRANSFER // FIRED",
+      "pos": "center 50%",
+      "year": "2026",
+      "technique": "オーバーグレーズ転写"
     },
     {
       "img": "assets/isezaki_IY_36_2_1.jpg",
-      "title": "壺",
-      "cap": "FIRED",
-      "pos": "center 50%"
+      "title": "HAL 片口",
+      "cap": "OVERGLAZE TRANSFER // FIRED",
+      "pos": "center 50%",
+      "year": "2026",
+      "technique": "オーバーグレーズ転写"
     },
     {
       "img": "assets/isezaki_IY_11_1.jpg",
-      "title": "茶碗",
-      "cap": "FIRED",
-      "pos": "center 50%"
+      "title": "HAL xxi mimituki 赤",
+      "cap": "OVERGLAZE TRANSFER // FIRED",
+      "pos": "center 50%",
+      "year": "2026",
+      "technique": "オーバーグレーズ転写",
+      "size": "h9.5 × w32.5 × d18.5 cm"
     },
     {
       "img": "assets/isezaki_IY_44_1.jpg",
-      "title": "蓋物",
-      "cap": "FIRED",
-      "pos": "center 50%"
+      "title": "HAL mimituki 掛花",
+      "cap": "OVERGLAZE TRANSFER // FIRED",
+      "pos": "center 50%",
+      "year": "2026",
+      "technique": "オーバーグレーズ転写",
+      "size": "h15 × w16.5 × d11.5 cm"
     },
     {
       "img": "assets/isezaki_IY_27_1.jpg",
-      "title": "タンブラー",
-      "cap": "FIRED",
-      "pos": "center 40%"
+      "title": "HAL 面取掛花 緑",
+      "cap": "OVERGLAZE TRANSFER // FIRED",
+      "pos": "center 40%",
+      "year": "2026",
+      "technique": "オーバーグレーズ転写",
+      "size": "h12.5 × w9 × d9 cm"
     }
   ],
   "dna": [
