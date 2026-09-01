@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google" content="notranslate">
 <title>ISEZAKI YOTARO — /HAL/ IMAGES, FIRED</title>
 <meta name="description" content="画像を、焼く。陶芸家・伊勢崎陽太郎 /HAL/。物と画像が溢れ、AIがその洪水を加速させる時代に、「本物」とは何か。無限に生成される画像から一枚を選び、土と火の技術で作った器に750℃で焼き付ける——溢れる世界で本物を問い直す行為。">
 <meta name="theme-color" content="#0B0A09">
@@ -67,6 +68,11 @@
   html{scroll-behavior:smooth}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);overflow-x:clip;position:relative}
   ::selection{background:var(--accent);color:var(--bg)}
+  ::-webkit-scrollbar{width:10px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:#2B2723;border:2px solid var(--bg)}
+  ::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+  :focus-visible{outline:1px solid var(--accent);outline-offset:3px}
   a{color:inherit}
   img{display:block}
   a:focus-visible,button:focus-visible{outline:1.5px solid var(--accent);outline-offset:3px}
@@ -81,9 +87,9 @@
   .grid-bg{position:fixed;inset:0;pointer-events:none;z-index:0;
     background-image:linear-gradient(rgba(237,230,216,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(237,230,216,.035) 1px,transparent 1px);
     background-size:120px 120px}
-  .flicker{position:fixed;inset:0;pointer-events:none;z-index:40;opacity:.05;
+  .flicker{position:fixed;inset:0;pointer-events:none;z-index:40;opacity:.032;
     background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 1px,transparent 1px 3px);animation:flick 9s steps(1) infinite}
-  @keyframes flick{0%,91%,93.5%,100%{opacity:.05}91.8%{opacity:.11}92.6%{opacity:.03}}
+  @keyframes flick{0%,91%,93.5%,100%{opacity:.032}91.8%{opacity:.075}92.6%{opacity:.02}}
   @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
   @keyframes fadeUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -129,7 +135,8 @@
   .cv-block{margin-bottom:46px}
   .cv-block:last-child{margin-bottom:0}
   .cv-block h3{margin:0 0 14px;font-family:var(--mono);font-weight:600;font-size:12px;letter-spacing:.26em;color:var(--accent)}
-  .cv-row{display:grid;grid-template-columns:92px 1fr;gap:22px;padding:11px 2px;border-bottom:1px solid var(--line-soft);align-items:baseline}
+  .cv-row{display:grid;grid-template-columns:92px 1fr;gap:22px;padding:11px 8px;border-bottom:1px solid var(--line-soft);align-items:baseline;transition:background .35s}
+  .cv-row:hover{background:rgba(237,230,216,.028)}
   .cv-row .y{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--muted);white-space:nowrap}
   .cv-row .v{font-size:14.5px;line-height:1.7;letter-spacing:.04em;color:var(--ink-2);text-wrap:pretty}
   .cv-row .soon{display:inline-block;margin-left:10px;padding:1px 8px;font-family:var(--mono);font-size:9.5px;
@@ -149,7 +156,7 @@
   .hero h1 .nw{white-space:nowrap}
   .hero-lede{margin:30px 0 0;max-width:37em;font-size:13.5px;line-height:2.15;letter-spacing:.05em;color:var(--ink-2);text-wrap:pretty;animation:fadeUp .8s .4s cubic-bezier(.2,.7,.2,1) both}
   .hero-cta{display:flex;flex-wrap:wrap;gap:16px;margin-top:44px;animation:fadeUp .8s .5s cubic-bezier(.2,.7,.2,1) both}
-  .btn{display:inline-block;white-space:nowrap;padding:17px 36px;font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-decoration:none;transition:background .25s,color .25s,border-color .25s}
+  .btn{display:inline-block;white-space:nowrap;padding:17px 36px;font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-decoration:none;transition:background .4s cubic-bezier(.2,.7,.2,1),color .4s,border-color .4s}
   .btn-primary{border:1px solid var(--accent);color:var(--ink)}
   .btn-primary:hover{background:var(--accent);color:var(--bg)}
   .btn-ghost{border:1px solid rgba(237,230,216,.28);color:var(--muted)}
@@ -196,8 +203,10 @@
   .reel-copy p{margin:22px auto 0;max-width:38em;font-family:var(--mono);font-size:12px;line-height:2.2;letter-spacing:.18em;color:var(--muted)}
 
   /* ---------- marquee ---------- */
-  .marquee{position:relative;z-index:1;overflow:hidden;border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);background:var(--panel-2)}
-  .marquee-track{display:flex;width:max-content;animation:marquee 30s linear infinite}
+  .marquee{position:relative;z-index:1;overflow:hidden;border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);background:var(--panel-2);
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+  .marquee-track{display:flex;width:max-content;animation:marquee 46s linear infinite}
   .marquee-row{display:flex;gap:64px;padding:14px 32px;font-family:var(--mono);font-size:11px;letter-spacing:.26em;color:var(--muted);white-space:nowrap}
   .marquee-row em{font-style:normal;color:var(--accent)}
   .marquee-row b{color:var(--ink);font-weight:500}
@@ -213,15 +222,17 @@
   /* ---------- works ---------- */
   .works-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:18px;perspective:1400px}
   .card{margin:0;background:var(--panel);border:1px solid var(--line-soft);display:flex;flex-direction:column;overflow:hidden;
-    transform-style:preserve-3d;transition:transform .3s cubic-bezier(.2,.7,.2,1),border-color .3s;will-change:transform}
-  .card:hover{border-color:rgba(200,69,43,.55)}
+    transform-style:preserve-3d;will-change:transform;
+    transition:transform .3s cubic-bezier(.2,.7,.2,1),border-color .5s,box-shadow .5s cubic-bezier(.2,.7,.2,1)}
+  .card:hover{border-color:rgba(200,69,43,.55);box-shadow:0 26px 60px -18px rgba(0,0,0,.65)}
   html:not(.js) .card:hover,.card.notilt:hover{transform:translateY(-5px)}
   .card img{width:100%;object-fit:cover;transition:transform .7s cubic-bezier(.2,.6,.15,1)}
   .card:hover img{transform:scale(1.03)}
-  .card figcaption{display:flex;justify-content:space-between;gap:12px;padding:14px 18px;font-size:13px;letter-spacing:.1em}
-  .card figcaption span{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--accent)}
-  .card figcaption span.grey{color:var(--muted)}
-  .card figcaption span.grey i{font-style:normal;color:var(--accent)}
+  .card figcaption{display:flex;flex-direction:column;gap:5px;padding:15px 18px 16px}
+  .card figcaption b{font-size:13.5px;font-weight:700;letter-spacing:.12em;color:var(--ink)}
+  .card figcaption span{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--muted);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .45s}
+  .card:hover figcaption span{color:var(--accent)}
   .col4{grid-column:span 4}
   .col2{grid-column:span 2}
   .h480 img{height:480px}
@@ -233,7 +244,10 @@
   .card{cursor:pointer}
   .lb{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;
     background:rgba(11,10,9,.93);backdrop-filter:blur(10px)}
-  .lb.open{display:flex}
+  .lb.open{display:flex;animation:lbFade .4s cubic-bezier(.2,.7,.2,1)}
+  .lb.open figure{animation:lbZoom .55s cubic-bezier(.2,.7,.2,1)}
+  @keyframes lbFade{from{opacity:0}}
+  @keyframes lbZoom{from{opacity:0;transform:scale(.965) translateY(12px)}}
   .lb figure{margin:0;max-width:min(92vw,1100px)}
   .lb img{max-width:100%;max-height:calc(88vh - 92px);object-fit:contain;display:block;margin:0 auto;
     border:1px solid var(--line-soft);background:var(--panel-2)}
@@ -269,7 +283,8 @@
   .dna-table .row b.accent{color:var(--accent)}
   .dna-table .row b.small{font-size:15px;color:var(--accent)}
   .chips{display:flex;gap:12px;margin-top:34px}
-  .chip{width:64px;height:64px;padding:0;cursor:pointer;background-size:cover;background-position:center 45%;
+  .chip:hover{transform:translateY(-3px)}
+  .chip{width:64px;height:64px;padding:0;cursor:pointer;background-size:cover;background-position:center 45%;transition:transform .35s cubic-bezier(.2,.7,.2,1),border-color .35s;
     border:1px solid rgba(237,230,216,.18);opacity:.65;filter:saturate(.7);transition:all .2s}
   .chip.active{border:2px solid var(--accent);opacity:1;filter:none}
 
