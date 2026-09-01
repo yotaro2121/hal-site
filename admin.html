@@ -203,6 +203,11 @@
     </div>
     <input type="file" id="worksPick" accept="image/*,.tif,.tiff,.heic,.heif" multiple hidden>
 
+    <div class="sect"><span class="num">01+</span><h2>EXHIBITION</h2><span class="hint">展示風景 — 会場の写真</span></div>
+    <p class="note" style="font-size:12px;margin:0 0 14px">個展・グループ展の会場写真を入れると、WORKS の下に「EXHIBITION」の節が出ます。1枚も入れなければ節ごと表示されません。横長の写真が向いています。</p>
+    <div id="exhList"></div>
+    <div class="dropzone" id="exhDrop">＋ ここに展示風景の写真をドラッグ(またはクリックで選択)</div>
+
     <div class="sect"><span class="num">02</span><h2>COLOR DNA</h2><span class="hint">色ごとの検体 — 白背景の写真推奨</span></div>
     <div class="row trow textonly" hidden>
       <div class="fields">
@@ -305,7 +310,7 @@ function loadSiteFromText(text){
   $('editor').hidden = false;
   $('savebar').classList.add('show');
   status('読み込み完了 — WORKS ' + site.works.length + ' / DNA ' + site.dna.length, 'ok');
-  renderHero(); renderWorks(); renderDna();
+  renderHero(); renderWorks(); renderExh(); renderDna();
 }
 
 // 入力欄と textData のキーを結びつける(空欄にするとキーを消す=サイトは元の文に戻る)
@@ -834,6 +839,42 @@ if (SR) {
     rec.start();
   });
 }
+
+// ---------- EXHIBITION(展示風景)----------
+function renderExh(){
+  const listEl = $('exhList');
+  listEl.textContent = '';
+  site.exhibitions = site.exhibitions || [];
+  site.exhibitions.forEach((e, i) => {
+    const row = document.createElement('div');
+    row.className = 'row';
+    const { thumb, img } = mkThumb(e);
+    const replace = async files => {
+      const path = await importImage(files[0], { max: 2000 });
+      if (path){ e.img = path; markDirty(); renderExh(); }
+    };
+    bindDrop(thumb, replace); bindPick(thumb, replace);
+    const fields = document.createElement('div');
+    fields.className = 'fields';
+    fields.appendChild(mkText('展示名', e.title || '', v => { if (v) e.title = v; else delete e.title; }));
+    const pair = document.createElement('div'); pair.className = 'pair';
+    pair.appendChild(mkText('会場', e.venue || '', v => { if (v) e.venue = v; else delete e.venue; }));
+    pair.appendChild(mkText('年月', e.year || '', v => { if (v) e.year = v; else delete e.year; }));
+    fields.appendChild(pair);
+    row.append(thumb, fields, mkOps(site.exhibitions, i, renderExh, '「' + (e.title || '展示風景') + '」を一覧から削除しますか?(画像ファイル自体は残ります)'));
+    listEl.appendChild(row);
+  });
+}
+async function addExh(files){
+  site.exhibitions = site.exhibitions || [];
+  for (const f of files){
+    const path = await importImage(f, { max: 2000 });
+    if (path) site.exhibitions.push({ img: path, title: '', venue: '', year: '' });
+  }
+  markDirty(); renderExh();
+}
+bindDrop($('exhDrop'), addExh);
+bindPick($('exhDrop'), addExh);
 
 // ---------- 保存 ----------
 $('saveBtn').addEventListener('click', async () => {

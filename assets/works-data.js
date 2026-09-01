@@ -100,6 +100,7 @@ window.SITE = {
       "color": "#C9A227",
       "pos": "center 45%"
     }
-  ]
+  ],
+  "exhibitions": []
 };
 window.WORKS = window.SITE.works;

@@ -15,8 +15,8 @@ window.TEXT = {
   },
   "hero": {
     "kicker": "IMAGES, FIRED — /HAL/",
-    "ledeJa": "AIが生んだ画像を、土と火で、二度と取り消せないものにする。",
-    "ledeEn": "An image born from AI, made irrevocable by earth and fire.",
+    "ledeJa": "AIも、窯も、人の制御を超える。そのズレを、一点として焼き留める。",
+    "ledeEn": "Both AI and the kiln exceed human control. I fire that deviation into a single piece.",
     "cap": "壺 <s>— HAL</s><br>750°C / 7H — <b>REGEN: DISABLED</b>",
     "signName": "伊勢崎 陽太郎",
     "signSub": "ISEZAKI YOTARO — CERAMIC ARTIST / TAJIMI, JP"

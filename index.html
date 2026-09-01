@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="google" content="notranslate">
 <title>ISEZAKI YOTARO — /HAL/ IMAGES, FIRED</title>
-<meta name="description" content="画像を、焼く。陶芸家・伊勢崎陽太郎 /HAL/。物と画像が溢れ、AIがその洪水を加速させる時代に、「本物」とは何か。無限に生成される画像から一枚を選び、土と火の技術で作った器に750℃で焼き付ける——溢れる世界で本物を問い直す行為。">
+<meta name="description" content="画像を、焼く。陶芸家・伊勢崎陽太郎 /HAL/。AIが生成したイメージとカメラロールの写真を、伝統的な日本陶芸の形式に焼き付ける。AIのプロセスも陶芸の焼成も人の制御を超える——そのズレを一点ごとの差異として受け止める。">
 <meta name="theme-color" content="#0B0A09">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <meta property="og:type" content="website">
 <meta property="og:title" content="ISEZAKI YOTARO — /HAL/ IMAGES, FIRED">
-<meta property="og:description" content="物と画像が溢れ、AIがその洪水を加速させる時代に、「本物」とは何か。消せるはずのニセモノは、二つのホンモノに挟まれ、二度と取り消せない一つの実在になる。「画像を、焼く」——陶芸家・伊勢崎陽太郎 /HAL/">
+<meta property="og:description" content="AIも、窯も、人の制御を超える。そのズレを、一点として焼き留める。「形式の臨界」——陶芸家・伊勢崎陽太郎 /HAL/ IMAGES, FIRED">
 <meta property="og:url" content="https://yotaro2121.github.io/hal-site/">
 <meta property="og:image" content="https://yotaro2121.github.io/hal-site/assets/og-image.jpg">
 <meta property="og:image:width" content="1200">
@@ -243,6 +243,14 @@
   .h480 img{height:480px}
   .h420 img{height:420px}
 
+  /* ---------- exhibition(展示風景) ---------- */
+  .exh-grid{display:grid;gap:26px}
+  .exh-shot{margin:0;position:relative}
+  .exh-shot img{width:100%;height:auto;display:block;background:var(--panel-2)}
+  .exh-shot figcaption{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;padding:14px 2px 0}
+  .exh-shot .t{font-size:14px;font-weight:700;letter-spacing:.1em;color:var(--ink)}
+  .exh-shot .m{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--muted)}
+
   /* ---------- works: 出自ノート & ライトボックス ---------- */
   .works-note{margin:-26px 0 34px;font-family:var(--mono);font-size:10.5px;line-height:2;letter-spacing:.18em;color:var(--muted)}
   .works-note b{color:var(--accent);font-weight:500}
@@ -383,7 +391,7 @@
       <nav>
         <a href="#works"><i>01</i>WORKS</a>
         <a href="#dna"><i>02</i>COLOR DNA</a>
-        <a href="#statement"><i>03</i>STATEMENT</a>
+        <a href="#exhibition" id="navExh" hidden><i>02</i>EXHIBITION</a><a href="#statement"><i>03</i>STATEMENT</a>
         <a href="#cv"><i>04</i>CV</a>
         <a href="#profile"><i>05</i>PROFILE</a>
         <a href="#contact"><i>06</i>CONTACT</a>
@@ -458,6 +466,12 @@
         <div class="chips" id="chips"></div>
       </div>
     </div>
+  </section>
+
+  <!-- EXHIBITION(展示風景) -->
+  <section id="exhibition" class="block" data-screen-label="EXHIBITION" hidden>
+    <div class="head"><span class="num">02</span><h2 id="exhTitle">EXHIBITION</h2><span class="note" id="exhNote">INSTALLATION VIEWS</span></div>
+    <div id="exhGrid" class="exh-grid"></div>
   </section>
 
   <!-- 03 STATEMENT -->
@@ -706,6 +720,30 @@
         fig.appendChild(img); fig.appendChild(cap);
         fig.addEventListener('click', function(){ lbOpen(mainSlide); });
         fig.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); lbOpen(mainSlide); } });
+        grid.appendChild(fig);
+      });
+    })();
+
+    // ---- EXHIBITION: 展示風景(admin.html で追加・編集可能) ----
+    (function(){
+      var list = (window.SITE && window.SITE.exhibitions) || [];
+      if (!list.length) return;
+      var sec = document.getElementById('exhibition'), grid = document.getElementById('exhGrid');
+      sec.hidden = false;
+      var nav = document.getElementById('navExh'); if (nav) nav.hidden = false;
+      list.forEach(function(e){
+        var fig = document.createElement('figure');
+        fig.className = 'exh-shot';
+        var img = document.createElement('img');
+        img.src = e.img; img.loading = 'lazy'; img.decoding = 'async';
+        img.alt = (e.title || '展示風景') + (e.venue ? ' — ' + e.venue : '');
+        if (e.pos) img.style.objectPosition = e.pos;
+        var cap = document.createElement('figcaption');
+        if (e.title){ var t1 = document.createElement('span'); t1.className = 't'; t1.textContent = e.title; cap.appendChild(t1); }
+        var meta = [e.venue, e.year].filter(Boolean).join('  /  ');
+        if (meta){ var m = document.createElement('span'); m.className = 'm'; m.textContent = meta; cap.appendChild(m); }
+        fig.appendChild(img);
+        if (cap.childNodes.length) fig.appendChild(cap);
         grid.appendChild(fig);
       });
     })();
