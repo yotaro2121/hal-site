@@ -25,8 +25,8 @@ window.TEXT = {
     "k": "750°C — 7 HOURS",
     "titleJa": "焼いたら、<br>もう戻せない。",
     "titleEn": "Once fired,<br>there is no going back.",
-    "bodyJa": "窯の中で画像は陶に固定される — REGEN: DISABLED / 複製可能性 ∞ → 0",
-    "bodyEn": "In the kiln, the image is fixed into clay — REGEN: DISABLED / reproducibility ∞ → 0"
+    "bodyJa": "窯を開けるまで、どう出るかは分からない。そのズレが、この一点をつくる。",
+    "bodyEn": "Until the kiln is opened, no one knows how it will come out. That deviation makes this single piece."
   },
   "dna": {
     "title": "COLOR DNA",

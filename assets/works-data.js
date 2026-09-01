@@ -62,6 +62,18 @@ window.SITE = {
       "year": "2026",
       "technique": "オーバーグレーズ転写",
       "size": "h12.5 × w9 × d9 cm"
+    },
+    {
+      "img": "assets/works/hibi-01.jpg",
+      "title": "日々",
+      "cap": "FIRED",
+      "pos": "center 50%"
+    },
+    {
+      "img": "assets/works/hibi-02.jpg",
+      "title": "日々",
+      "cap": "FIRED",
+      "pos": "center 50%"
     }
   ],
   "dna": [
@@ -101,6 +113,13 @@ window.SITE = {
       "pos": "center 45%"
     }
   ],
-  "exhibitions": []
+  "exhibitions": [
+    {
+      "img": "assets/works/install-01.jpg",
+      "title": "",
+      "venue": "",
+      "year": ""
+    }
+  ]
 };
 window.WORKS = window.SITE.works;
