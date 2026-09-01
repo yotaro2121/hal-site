@@ -427,7 +427,7 @@
 
   <!-- 02 COLOR DNA -->
   <section id="dna" class="block" data-screen-label="02 COLOR DNA">
-    <div class="head"><span class="num">02</span><h2>COLOR DNA</h2><span class="note">HALの人格は、色で分岐する</span></div>
+    <div class="head"><span class="num">02</span><h2 id="dnaTitle">COLOR DNA</h2><span class="note" id="dnaNote">HALの人格は、色で分岐する</span></div>
     <div class="dna">
       <div class="dna-stage">
         <img loading="lazy" decoding="async" width="1001" height="1500" id="dnaImg" src="assets/isezaki_IY_28_2.jpg" alt="HAL 赤">
@@ -435,7 +435,7 @@
       </div>
       <div>
         <h3><span id="dnaKanji" style="color:#C8452B">赤</span><em id="dnaCode">HAL_01 / 緋</em></h3>
-        <p class="select">SELECT — 器に焼き込む色を選択</p>
+        <p class="select" id="dnaSelect">SELECT — 器に焼き込む色を選択</p>
         <div class="dna-table">
           <div class="row"><span>複製可能性（生成時）</span><b class="ink">∞</b></div>
           <div class="row"><span>複製可能性（焼成後）</span><b class="accent">0</b></div>
@@ -599,6 +599,11 @@
         setBi('reelBody', T.reel.bodyJa, T.reel.bodyEn);
       }
       if (T.worksNote) setBi('worksNote', T.worksNote.ja, T.worksNote.en);
+      if (T.dna){
+        setBi('dnaTitle', T.dna.title);
+        setBi('dnaNote', T.dna.noteJa, T.dna.noteEn);
+        setBi('dnaSelect', T.dna.selectJa, T.dna.selectEn);
+      }
       if (T.contact){
         var mail = document.getElementById('contactMail');
         if (mail && T.contact.email){ mail.textContent = T.contact.email; mail.href = 'mailto:' + T.contact.email; }

@@ -185,6 +185,19 @@
     <input type="file" id="worksPick" accept="image/*,.tif,.tiff,.heic,.heif" multiple hidden>
 
     <div class="sect"><span class="num">02</span><h2>COLOR DNA</h2><span class="hint">色ごとの検体 — 白背景の写真推奨</span></div>
+    <div class="row trow textonly" hidden>
+      <div class="fields">
+        <label>見出し(英字)<input type="text" id="tDnaTitle"></label>
+        <div class="pair">
+          <label>ひとこと説明(日本語)<input type="text" id="tDnaNoteJa"></label>
+          <label>ひとこと説明(ENGLISH)<input type="text" id="tDnaNoteEn"></label>
+        </div>
+        <div class="pair">
+          <label>選択の案内(日本語)<input type="text" id="tDnaSelectJa"></label>
+          <label>選択の案内(ENGLISH)<input type="text" id="tDnaSelectEn"></label>
+        </div>
+      </div>
+    </div>
     <div id="dnaList"></div>
     <div class="dropzone" id="dnaDrop">＋ ここに写真をドラッグ(またはクリックで選択)して色を追加</div>
     <input type="file" id="dnaPick" accept="image/*,.tif,.tiff,.heic,.heif" multiple hidden>
@@ -311,6 +324,12 @@ function loadTextFromText(text){
     wireText('tReelTitleEn', textData.reel, 'titleEn');
     wireText('tReelBodyJa', textData.reel, 'bodyJa');
     wireText('tReelBodyEn', textData.reel, 'bodyEn');
+    textData.dna = textData.dna || {};
+    wireText('tDnaTitle', textData.dna, 'title');
+    wireText('tDnaNoteJa', textData.dna, 'noteJa');
+    wireText('tDnaNoteEn', textData.dna, 'noteEn');
+    wireText('tDnaSelectJa', textData.dna, 'selectJa');
+    wireText('tDnaSelectEn', textData.dna, 'selectEn');
     wireText('tWorksNoteJa', textData.worksNote, 'ja');
     wireText('tWorksNoteEn', textData.worksNote, 'en');
     wireText('tEmail', textData.contact, 'email');
