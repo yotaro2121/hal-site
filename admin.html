@@ -142,6 +142,10 @@
             <label>WORKS の小見出し<input type="text" id="tNoteWorks"></label>
             <label>PROFILE の小見出し<input type="text" id="tNoteProfile"></label>
           </div>
+          <div class="pair">
+            <label>ステートメント表題(日本語)<input type="text" id="tNoteStmtJa"></label>
+            <label>ステートメント表題(ENGLISH)<input type="text" id="tNoteStmtEn"></label>
+          </div>
         </div>
       </div>
     </div>
@@ -349,6 +353,8 @@ function loadTextFromText(text){
     });
     wireText('tNoteWorks', textData.notes, 'works');
     wireText('tNoteProfile', textData.notes, 'profile');
+    wireText('tNoteStmtJa', textData.notes, 'statementJa');
+    wireText('tNoteStmtEn', textData.notes, 'statementEn');
     textData.dna = textData.dna || {};
     wireText('tDnaTitle', textData.dna, 'title');
     wireText('tDnaNoteJa', textData.dna, 'noteJa');

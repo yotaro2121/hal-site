@@ -9,7 +9,9 @@ window.TEXT = {
   },
   "notes": {
     "works": "ARCHIVE",
-    "profile": "DOSSIER"
+    "profile": "DOSSIER",
+    "statementJa": "形式の臨界",
+    "statementEn": "CRITICAL THRESHOLD"
   },
   "hero": {
     "kicker": "IMAGES, FIRED — /HAL/",
@@ -78,24 +80,20 @@ window.TEXT = {
   },
   "statement": [
     {
-      "ja": "私は備前に生まれた。数千年、人間が土と火と交わしてきた技術の記憶の中で育った。手が覚えている感覚、窯の中で起きることを引き受ける覚悟。それは複製できない、身体にしか宿らない「本物」だ。",
-      "en": "I was born in Bizen, and grew up inside the memory of a craft — thousands of years of exchange between human beings, earth, and fire. The sense that lives in the hands; the resolve to accept whatever happens inside the kiln. That is a “real” that cannot be copied — it dwells only in the body."
+      "ja": "私は、AIによって生成されたイメージやキャラクター、デジタルデバイスに蓄積される写真を、伝統的な日本陶芸の形式に落とし込んで作品を制作している。更新され続けるデータと、長い時間をかけて培われてきた造形を交差させ、その捉え方が変わる地点を探っている。",
+      "en": "I create works by incorporating AI-generated images and characters, along with photographs accumulated through digital devices, into traditional Japanese ceramic forms. By intersecting continuously updated data with forms cultivated over time, I explore the point at which perception shifts."
     },
     {
-      "ja": "いま、世界は物と画像で溢れている。良いものと、そうでないものの境目は見えにくくなり、AIは無限に画像を生成することで、その洪水をさらに加速させている。",
-      "en": "The world now overflows with things and images. The line between what is good and what is not grows harder to see, and AI — generating images without end — only accelerates the flood."
+      "ja": "二次元のデータを土に転写し焼成する。<b>AIのプロセスも陶芸の焼成も、人の制御を超える。</b>結果を完全に決定することはできない。AIの予期せぬ出力や窯変によって生じるズレや滲み、剥がれを、不具合として排除するのではなく、一点ごとの差異として受け止める。それらの差異が作品の個性となる。",
+      "en": "I transfer two-dimensional data onto clay and fire it. <b>Both AI processes and ceramic firing exceed human control;</b> their outcomes cannot be fully determined. Misalignments, blurs, and peeling that occur through unexpected AI outputs or kiln transformations are not treated as defects, but as differences unique to each piece. These differences become the individuality of the work."
     },
     {
-      "ja": "その洪水の中から、私は一枚の画像を選ぶ。AIが生んだアニメのキャラクター——ワンクリックで消せるはずの「ニセモノ」を、本物の技術で作った器に転写し、750℃で焼き付ける。火を通った瞬間、それは二度と取り消せない、この世界に一つだけの実在になる。<b>無限に流れていくものを、一つだけ、止める。</b>",
-      "en": "Out of that flood, I choose a single image. An anime character born from AI — a “fake” that one click should be able to erase — is transferred onto a vessel made with real craft, and fired at 750°C. The moment it passes through fire, it becomes irrevocable: the only one of its kind in this world. <b>Of all that flows endlessly past, I stop just one.</b>"
+      "ja": "私は岡山県備前に生まれ、伝統的な陶芸に囲まれて育った。美術大学卒業後、家業の窯元で土と火に向き合った。伝統の中に身を置きながら、継承された形と自分が生きている現在とのあいだに隔たりを感じるようになった。その緊張と向き合うため、備前を離れ、東京で暮らした。",
+      "en": "I was born in Bizen, Okayama, and grew up surrounded by traditional ceramics. After graduating from art university, I worked at my family's kiln, engaging directly with clay and fire. Immersed in tradition, I began to sense a distance between inherited forms and the present in which I live. To confront this tension, I left Bizen and lived in Tokyo for a period of time."
     },
     {
-      "ja": "ニセモノは、それだけでは輝けない。AIの画像の背後には、私たちがアニメや漫画から受け取った物語——人間が本気で作った「本物」——が堆積し、それを受け止める器には、土と火の技術がある。<b>ニセモノは、二つのホンモノに挟まれて初めて光る。</b>",
-      "en": "A fake cannot shine on its own. Behind the AI image lie the stories we received from anime and manga — “real things” humans made in earnest — and beneath it, the vessel carries the craft of earth and fire. <b>Only pressed between these two authenticities does the fake begin to glow.</b>"
-    },
-    {
-      "ja": "だから私は「画像を、焼く」。溢れる世界の中で、本物とは何かを陶の上で問い直す、私なりの工芸の続きだ。",
-      "en": "That is why I fire images. In an overflowing world, it is my way of continuing the craft — asking again, on the surface of ceramics, what is real."
+      "ja": "影響を受けてきた漫画やアニメ、そして都市のデジタル環境を通して絶えず流れ込む情報は、現代の認識がどのように形づくられているかを明確にした。同時に、備前で培われた身体的な感覚が、制作の基盤であることも再確認した。<b>私は、伝統を固定された様式ではなく、変化を受け止める構造として捉えている。</b>",
+      "en": "The manga and anime that influenced me, together with the constant flow of information through digital environments in the city, revealed how contemporary perception is shaped. At the same time, I reaffirmed that the bodily knowledge cultivated in Bizen remains the foundation of my practice. <b>I understand tradition not as a fixed style, but as a structure capable of absorbing change.</b>"
     }
   ],
   "cv": [

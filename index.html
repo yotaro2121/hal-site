@@ -462,7 +462,7 @@
 
   <!-- 03 STATEMENT -->
   <section id="statement" class="block" data-screen-label="03 STATEMENT">
-    <div class="head"><span class="num">03</span><h2>STATEMENT</h2><span class="note">CONCEPT — KILN_LOG</span></div>
+    <div class="head"><span class="num">03</span><h2>STATEMENT</h2><span class="note" id="statementHeadNote">CONCEPT — KILN_LOG</span></div>
     <div class="terminal" id="statementBody">
       <div class="bar"><span>KILN_LOG.txt</span><span>—</span><span>ISEZAKI_YOTARO</span></div>
       <p>
@@ -621,6 +621,7 @@
       if (T.notes){
         setBi('worksHeadNote', T.notes.works);
         setBi('profileHeadNote', T.notes.profile);
+        setBi('statementHeadNote', T.notes.statementJa, T.notes.statementEn);
       }
       if (T.dna){
         setBi('dnaTitle', T.dna.title);
