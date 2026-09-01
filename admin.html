@@ -137,6 +137,7 @@
         <div class="fields">
           <label style="justify-content:flex-start"><input type="checkbox" id="tStyleNums">章番号(01〜06)を表示する</label>
           <label style="justify-content:flex-start"><input type="checkbox" id="tStyleMarquee">流れるテロップを表示する</label>
+          <label style="justify-content:flex-start"><input type="checkbox" id="tStyleDna">COLOR DNA の節を表示する</label>
           <div class="pair">
             <label>WORKS の小見出し<input type="text" id="tNoteWorks"></label>
             <label>PROFILE の小見出し<input type="text" id="tNoteProfile"></label>
@@ -234,6 +235,7 @@
           <label>メールアドレス<input type="text" id="tEmail"></label>
           <label style="align-items:flex-start">案内文(日本語)<textarea id="tContactJa" rows="2"></textarea></label>
           <label style="align-items:flex-start">案内文(ENGLISH)<textarea id="tContactEn" rows="2"></textarea></label>
+          <label>写真クレジット<input type="text" id="tPhotoCredit"></label>
           <div class="pair">
             <label>Instagram URL<input type="text" id="tIgUrl"></label>
             <label>Instagram 表示名<input type="text" id="tIgLabel"></label>
@@ -340,7 +342,7 @@ function loadTextFromText(text){
     wireText('tReelBodyEn', textData.reel, 'bodyEn');
     textData.style = textData.style || {};
     textData.notes = textData.notes || {};
-    [['tStyleNums','sectionNumbers'],['tStyleMarquee','marquee']].forEach(function(p){
+    [['tStyleNums','sectionNumbers'],['tStyleMarquee','marquee'],['tStyleDna','colorDna']].forEach(function(p){
       const el = $(p[0]);
       el.checked = textData.style[p[1]] === true;
       el.addEventListener('change', () => { textData.style[p[1]] = el.checked; markDirty(); });
@@ -358,6 +360,7 @@ function loadTextFromText(text){
     wireText('tEmail', textData.contact, 'email');
     wireText('tContactJa', textData.contact, 'descJa');
     wireText('tContactEn', textData.contact, 'descEn');
+    wireText('tPhotoCredit', textData.contact, 'photoCredit');
     wireText('tIgUrl', textData.contact, 'igUrl');
     wireText('tIgLabel', textData.contact, 'igLabel');
     renderStatement(); renderCv(); renderProfile(); updateKitUI();

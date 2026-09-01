@@ -71,6 +71,7 @@
   html.no-nums .head .num,html.no-nums nav a i{display:none}
   html.no-nums .head{gap:0}
   html.no-marquee .marquee{display:none}
+  html.no-dna #dna,html.no-dna nav a[href="#dna"]{display:none}
   ::selection{background:var(--accent);color:var(--bg)}
   ::-webkit-scrollbar{width:10px}
   ::-webkit-scrollbar-track{background:var(--bg)}
@@ -280,6 +281,7 @@
   .dna h3 em{font-style:normal;font-family:var(--mono);font-weight:500;font-size:14px;letter-spacing:.26em;color:var(--accent)}
   .dna .select{margin:18px 0 0;font-family:var(--mono);font-size:11px;letter-spacing:.24em;color:var(--muted)}
   .dna-table{margin-top:34px;border-top:1px solid var(--line)}
+  .dna-table.spec-under{max-width:960px;margin:30px auto 0}
   .dna-table .row{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:15px 2px;border-bottom:1px solid var(--line)}
   .dna-table .row span{font-size:13px;letter-spacing:.12em;color:var(--muted)}
   .dna-table .row b{font-family:var(--mono);font-size:19px}
@@ -295,7 +297,8 @@
   /* ---------- statement ---------- */
   .terminal{max-width:960px;margin:0 auto;background:var(--panel-2);border:1px solid rgba(237,230,216,.1)}
   .terminal .bar{display:flex;gap:16px;padding:12px 22px;border-bottom:1px solid rgba(237,230,216,.1);font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--muted)}
-  .terminal p{margin:0;padding:38px 42px 44px;font-family:var(--mono);font-size:14px;line-height:2.7;letter-spacing:.06em;color:var(--ink-2)}
+  .terminal p{margin:0;padding:38px 42px 44px;font-family:var(--sans);font-size:15px;line-height:2.5;letter-spacing:.08em;color:var(--ink-2);text-wrap:pretty}
+  .terminal i{font-family:var(--mono);font-size:13px}
   .terminal i{font-style:normal;color:var(--accent)}
   .terminal b{color:var(--ink)}
   .terminal em{font-style:normal;color:var(--accent)}
@@ -322,6 +325,7 @@
   footer.contact .mail{display:inline-block;margin-top:26px;font-family:var(--mono);font-size:15px;letter-spacing:.14em;color:var(--accent);text-decoration:underline;text-underline-offset:6px;transition:color .2s}
   footer.contact .mail:hover{color:var(--ink)}
   footer.contact .desc{margin:34px 0 0;max-width:44em;font-size:13px;line-height:2.4;letter-spacing:.06em;color:var(--muted);text-wrap:pretty}
+  footer.contact .credit{margin:22px 0 0;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--muted-2)}
   footer.contact .presskit{margin:26px 0 0}
   footer.contact .presskit a{display:inline-block;padding:12px 22px;border:1px solid rgba(237,230,216,.28);font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--ink);text-decoration:none;transition:border-color .2s}
   footer.contact .presskit a:hover{border-color:var(--accent)}
@@ -364,6 +368,7 @@
     var r = document.documentElement;
     if (s.sectionNumbers !== true) r.classList.add('no-nums');
     if (s.marquee !== true) r.classList.add('no-marquee');
+    if (s.colorDna !== true) r.classList.add('no-dna');
   })();
 </script>
 </head>
@@ -450,12 +455,6 @@
       <div>
         <h3><span id="dnaKanji" style="color:#C8452B">赤</span><em id="dnaCode">HAL_01 / 緋</em></h3>
         <p class="select" id="dnaSelect">SELECT — 器に焼き込む色を選択</p>
-        <div class="dna-table">
-          <div class="row"><span>複製可能性（生成時）</span><b class="ink">∞</b></div>
-          <div class="row"><span>複製可能性（焼成後）</span><b class="accent">0</b></div>
-          <div class="row"><span>土・火の介入</span><b class="ink">100%</b></div>
-          <div class="row"><span>同一個体</span><b class="small">存在しない</b></div>
-        </div>
         <div class="chips" id="chips"></div>
       </div>
     </div>
@@ -478,6 +477,12 @@
         <i>&gt;</i> <span data-en="That is why I fire images. In an overflowing world, it is my way of continuing the craft — asking again, on the surface of ceramics, what is real.">だから私は「画像を、焼く」。溢れる世界の中で、本物とは何かを陶の上で問い直す、私なりの工芸の続きだ。</span><br>
         <i>&gt;</i> REGENERATION: <em>PERMANENTLY DISABLED</em><span class="cursor">▊</span>
       </p>
+    </div>
+    <div class="dna-table spec-under">
+      <div class="row"><span>複製可能性（生成時）</span><b class="ink">∞</b></div>
+      <div class="row"><span>複製可能性（焼成後）</span><b class="accent">0</b></div>
+      <div class="row"><span>土・火の介入</span><b class="ink">100%</b></div>
+      <div class="row"><span>同一個体</span><b class="small">存在しない</b></div>
     </div>
   </section>
 
@@ -543,6 +548,7 @@
     <p class="big">CONTACT<span class="cursor" style="font-weight:900">_</span></p>
     <a href="mailto:youta976@gmail.com" class="mail" id="contactMail">youta976@gmail.com</a>
     <p class="desc" id="contactDesc" data-en="Works are available through representing galleries and at exhibition venues. Inquiries for brand / IP collaborations are also welcome — placing your icon into the context of a single object that can never be regenerated.">作品のご購入は取扱ギャラリーおよび展覧会会場にて。ブランド・IPとのコラボレーションのご相談も受け付けています——貴社のアイコンを、二度と再生成できない一点物の文脈へ。</p>
+    <p class="credit" id="photoCredit">Photo: 水犀 / Suisai</p>
     <div class="foot">
       <span>© 2026 ISEZAKI YOTARO</span>
       <a href="https://www.instagram.com/youtarou21/" target="_blank" rel="noopener" id="igLink">INSTAGRAM — @youtarou21</a>
@@ -625,6 +631,7 @@
         var mail = document.getElementById('contactMail');
         if (mail && T.contact.email){ mail.textContent = T.contact.email; mail.href = 'mailto:' + T.contact.email; }
         setBi('contactDesc', T.contact.descJa, T.contact.descEn);
+        setBi('photoCredit', T.contact.photoCredit);
         var ig = document.getElementById('igLink');
         if (ig && T.contact.igLabel){ ig.textContent = T.contact.igLabel; if (T.contact.igUrl) ig.href = T.contact.igUrl; }
         // ギャラリー向け資料PDF(管理画面でアップロードすると表示される)
