@@ -60,7 +60,7 @@ window.SITE = {
     },
     {
       "img": "assets/isezaki_IY_23_1.jpg",
-      "title": "HAL へラメ平茶碗",
+      "title": "HAL ヘラメ平茶碗",
       "cap": "OVERGLAZE TRANSFER // FIRED",
       "pos": "center 50%",
       "year": "2026",
@@ -150,21 +150,21 @@ window.SITE = {
   "exhibitions": [
     {
       "img": "assets/works/install-01.jpg",
-      "title": "HAL",
-      "venue": "水犀",
-      "year": "2026"
+      "title": "個展「HAL」",
+      "venue": "水犀(東京)",
+      "year": "2026.06"
     },
     {
       "img": "assets/works/DSC01735-mtiwh31d.jpg",
-      "title": "HAL",
-      "venue": "水犀",
-      "year": "2026"
+      "title": "",
+      "venue": "",
+      "year": ""
     },
     {
       "img": "assets/works/DSC01736-mtiwhbw9.jpg",
-      "title": "HAL",
-      "venue": "水犀",
-      "year": "2026"
+      "title": "",
+      "venue": "",
+      "year": ""
     }
   ]
 };
