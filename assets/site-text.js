@@ -5,7 +5,8 @@ window.TEXT = {
   "style": {
     "sectionNumbers": false,
     "marquee": true,
-    "colorDna": false
+    "colorDna": false,
+    "sourceImages": true
   },
   "notes": {
     "works": "ARCHIVE",

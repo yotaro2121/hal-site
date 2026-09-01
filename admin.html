@@ -138,6 +138,7 @@
           <label style="justify-content:flex-start"><input type="checkbox" id="tStyleNums">章番号(01〜06)を表示する</label>
           <label style="justify-content:flex-start"><input type="checkbox" id="tStyleMarquee">流れるテロップを表示する</label>
           <label style="justify-content:flex-start"><input type="checkbox" id="tStyleDna">COLOR DNA の節を表示する</label>
+          <label style="justify-content:flex-start"><input type="checkbox" id="tStyleSource">転写元のAI画像を拡大表示に出す</label>
           <div class="pair">
             <label>WORKS の小見出し<input type="text" id="tNoteWorks"></label>
             <label>PROFILE の小見出し<input type="text" id="tNoteProfile"></label>
@@ -351,9 +352,11 @@ function loadTextFromText(text){
     wireText('tReelBodyEn', textData.reel, 'bodyEn');
     textData.style = textData.style || {};
     textData.notes = textData.notes || {};
-    [['tStyleNums','sectionNumbers'],['tStyleMarquee','marquee'],['tStyleDna','colorDna']].forEach(function(p){
+    // [入力ID, 保存キー, 既定値] — 既定値は未設定のときの状態
+    [['tStyleNums','sectionNumbers',false],['tStyleMarquee','marquee',false],
+     ['tStyleDna','colorDna',false],['tStyleSource','sourceImages',true]].forEach(function(p){
       const el = $(p[0]);
-      el.checked = textData.style[p[1]] === true;
+      el.checked = textData.style[p[1]] === undefined ? p[2] : textData.style[p[1]] === true;
       el.addEventListener('change', () => { textData.style[p[1]] = el.checked; markDirty(); });
     });
     wireText('tNoteWorks', textData.notes, 'works');
@@ -591,25 +594,31 @@ function renderWorks(){
     };
     bindDrop(thumb, replaceMain);
     bindPick(thumb, replaceMain);
-    const mini = document.createElement('div');
-    mini.className = 'thumb mini' + (w.detail ? ' has' : '');
-    if (w.detail){
-      const dImg = document.createElement('img');
-      fileURL(w.detail).then(u => { if (u) dImg.src = u; });
-      const clear = document.createElement('button');
-      clear.className = 'clear'; clear.textContent = '×'; clear.title = 'ディテール画像を外す';
-      clear.addEventListener('click', e => { e.stopPropagation(); delete w.detail; markDirty(); renderWorks(); });
-      mini.append(dImg, clear);
-    } else {
-      mini.textContent = '＋ ディテール写真(任意)— クリックかドラッグ';
-    }
-    const replaceDetail = async files => {
-      const path = await importImage(files[0]);
-      if (path){ w.detail = path; markDirty(); renderWorks(); }
+    // 追加画像の枠を作る(ディテール / 転写元のAI画像)
+    const mkMini = (key, placeholder, clearTitle) => {
+      const el = document.createElement('div');
+      el.className = 'thumb mini' + (w[key] ? ' has' : '');
+      if (w[key]){
+        const dImg = document.createElement('img');
+        fileURL(w[key]).then(u => { if (u) dImg.src = u; });
+        const clear = document.createElement('button');
+        clear.className = 'clear'; clear.textContent = '×'; clear.title = clearTitle;
+        clear.addEventListener('click', e => { e.stopPropagation(); delete w[key]; markDirty(); renderWorks(); });
+        el.append(dImg, clear);
+      } else {
+        el.textContent = placeholder;
+      }
+      const replace = async files => {
+        const path = await importImage(files[0]);
+        if (path){ w[key] = path; markDirty(); renderWorks(); }
+      };
+      bindDrop(el, replace);
+      bindPick(el, replace);
+      return el;
     };
-    bindDrop(mini, replaceDetail);
-    bindPick(mini, replaceDetail);
-    col.append(thumb, mini);
+    col.append(thumb,
+      mkMini('detail', '＋ ディテール写真(任意)', 'ディテール画像を外す'),
+      mkMini('source', '＋ 転写元のAI画像(任意)', '転写元の画像を外す'));
 
     const fields = document.createElement('div');
     fields.className = 'fields';

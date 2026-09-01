@@ -699,6 +699,10 @@
         var mainSlide = LB_SLIDES.length;
         LB_SLIDES.push({ img: w.img, w: w, label: '' });
         if (w.detail) LB_SLIDES.push({ img: w.detail, w: w, label: 'DETAIL' });
+        // 転写元のAI画像(管理画面のスイッチで表示/非表示。既定は表示)
+        if (w.source && !(window.TEXT && window.TEXT.style && window.TEXT.style.sourceImages === false)) {
+          LB_SLIDES.push({ img: w.source, w: w, label: 'SOURCE — 転写元' });
+        }
 
         var fig = document.createElement('figure');
         fig.className = 'card ' + PATTERN[i % PATTERN.length];
@@ -756,7 +760,7 @@
       lbIndex = (i + LB_SLIDES.length) % LB_SLIDES.length;
       var s = LB_SLIDES[lbIndex], w = s.w;
       lbImg.src = s.img;
-      lbImg.alt = 'HAL — ' + w.title + (s.label ? '(ディテール)' : '');
+      lbImg.alt = 'HAL — ' + w.title + (s.label ? '(' + s.label + ')' : '');
       lbTitle.textContent = w.title;
       var meta = [];
       if (s.label) meta.push(s.label);
