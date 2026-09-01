@@ -4,7 +4,7 @@
 window.TEXT = {
   "style": {
     "sectionNumbers": false,
-    "marquee": false,
+    "marquee": true,
     "colorDna": false
   },
   "notes": {

@@ -1,13 +1,13 @@
 window.SITE = {
   "hero": {
-    "pos": "center 62%"
+    "pos": "center 63%"
   },
   "works": [
     {
       "img": "assets/works/isezaki_IY_5_1-mrs56wev.jpg",
       "title": "HAL MENTORI",
       "cap": "OVERGLAZE TRANSFER // FIRED",
-      "pos": "center 42%",
+      "pos": "center 46%",
       "year": "2026",
       "technique": "オーバーグレーズ転写",
       "size": "h18 × w33.5 × d23 cm"
@@ -64,14 +64,27 @@ window.SITE = {
       "size": "h12.5 × w9 × d9 cm"
     },
     {
-      "img": "assets/works/hibi-01.jpg",
+      "img": "assets/works/hibi-02.jpg",
       "title": "日々",
+      "cap": "FIRED",
+      "pos": "center 50%",
+      "year": "2025"
+    },
+    {
+      "img": "assets/works/isezaki_IY_8_5-mtiwkgqz.jpg",
+      "title": "無題",
       "cap": "FIRED",
       "pos": "center 50%"
     },
     {
-      "img": "assets/works/hibi-02.jpg",
-      "title": "日々",
+      "img": "assets/works/isezaki_IY_20_1-mtiwly6s.jpg",
+      "title": "無題",
+      "cap": "FIRED",
+      "pos": "center 50%"
+    },
+    {
+      "img": "assets/works/isezaki_IY_1_2-mtiwmd3s.jpg",
+      "title": "無題",
       "cap": "FIRED",
       "pos": "center 50%"
     }
@@ -116,9 +129,21 @@ window.SITE = {
   "exhibitions": [
     {
       "img": "assets/works/install-01.jpg",
-      "title": "",
-      "venue": "",
-      "year": ""
+      "title": "HAL",
+      "venue": "水犀",
+      "year": "2026"
+    },
+    {
+      "img": "assets/works/DSC01735-mtiwh31d.jpg",
+      "title": "HAL",
+      "venue": "水犀",
+      "year": "2026"
+    },
+    {
+      "img": "assets/works/DSC01736-mtiwhbw9.jpg",
+      "title": "HAL",
+      "venue": "水犀",
+      "year": "2026"
     }
   ]
 };
