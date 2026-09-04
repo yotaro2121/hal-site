@@ -166,6 +166,7 @@ window.SITE = {
       "venue": "",
       "year": ""
     }
-  ]
+  ],
+  "press": []
 };
 window.WORKS = window.SITE.works;

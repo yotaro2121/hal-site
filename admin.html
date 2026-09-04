@@ -209,6 +209,11 @@
     <div id="exhList"></div>
     <div class="dropzone" id="exhDrop">＋ ここに展示風景の写真をドラッグ(またはクリックで選択)</div>
 
+    <div class="sect"><span class="num">04+</span><h2>PRESS</h2><span class="hint">掲載・記事 — 外部サイトへのリンク</span></div>
+    <p class="note" style="font-size:12px;margin:0 0 14px">雑誌・ウェブ記事・インタビューなど、自分について書かれたページのリンクを入れます。1件も無ければ節ごと表示されません。新しいものを上にすると親切です。</p>
+    <div id="pressList2"></div>
+    <button class="btn small addline" id="pressAdd">＋ 掲載を追加</button>
+
     <div class="sect"><span class="num">02</span><h2>COLOR DNA</h2><span class="hint">色ごとの検体 — 白背景の写真推奨</span></div>
     <div class="row trow textonly" hidden>
       <div class="fields">
@@ -311,7 +316,7 @@ function loadSiteFromText(text){
   $('editor').hidden = false;
   $('savebar').classList.add('show');
   status('読み込み完了 — WORKS ' + site.works.length + ' / DNA ' + site.dna.length, 'ok');
-  renderHero(); renderWorks(); renderExh(); renderDna();
+  renderHero(); renderWorks(); renderExh(); renderPress(); renderDna();
 }
 
 // 入力欄と textData のキーを結びつける(空欄にするとキーを消す=サイトは元の文に戻る)
@@ -884,6 +889,33 @@ async function addExh(files){
 }
 bindDrop($('exhDrop'), addExh);
 bindPick($('exhDrop'), addExh);
+
+// ---------- PRESS(掲載・記事)----------
+function renderPress(){
+  const listEl = $('pressList2');
+  listEl.textContent = '';
+  site.press = site.press || [];
+  site.press.forEach((p, i) => {
+    const row = document.createElement('div');
+    row.className = 'row trow';
+    const fields = document.createElement('div');
+    fields.className = 'fields';
+    const pair = document.createElement('div'); pair.className = 'pair';
+    const dl = mkText('年月(例 2026.09)', p.date || '', v => { if (v) p.date = v; else delete p.date; });
+    dl.style.flex = '0 0 260px';
+    pair.append(dl, mkText('媒体名(例 美術手帖)', p.outlet || '', v => { if (v) p.outlet = v; else delete p.outlet; }));
+    fields.appendChild(pair);
+    fields.appendChild(mkText('記事タイトル', p.title || '', v => { if (v) p.title = v; else delete p.title; }));
+    fields.appendChild(mkText('リンク(https://…)', p.url || '', v => { if (v) p.url = v; else delete p.url; }));
+    row.append(fields, mkOps(site.press, i, renderPress, '「' + (p.title || p.outlet || '掲載') + '」を一覧から削除しますか?'));
+    listEl.appendChild(row);
+  });
+}
+$('pressAdd').addEventListener('click', () => {
+  site.press = site.press || [];
+  site.press.unshift({ date: '', outlet: '', title: '', url: '' });
+  markDirty(); renderPress();
+});
 
 // ---------- 保存 ----------
 $('saveBtn').addEventListener('click', async () => {

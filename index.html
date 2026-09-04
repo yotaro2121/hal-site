@@ -56,7 +56,7 @@
     --ink-2:#CFC7B8;
     --muted:#B8AE9C;
     --muted-2:#8A8478;
-    --accent:#C8452B;
+    --accent:#C8452B; --accent-text:#D4553A;
     --violet:#7A68B5;
     --line:rgba(237,230,216,.12);
     --line-soft:rgba(237,230,216,.08);
@@ -77,7 +77,11 @@
   ::-webkit-scrollbar-track{background:var(--bg)}
   ::-webkit-scrollbar-thumb{background:#2B2723;border:2px solid var(--bg)}
   ::-webkit-scrollbar-thumb:hover{background:var(--accent)}
-  :focus-visible{outline:1px solid var(--accent);outline-offset:3px}
+  :focus-visible{outline:2px solid var(--accent-text);outline-offset:4px}
+  /* キーボード操作時だけ現れる「本文へ移動」 */
+  .skip{position:fixed;top:-100px;left:12px;z-index:100;background:var(--accent-text);color:var(--bg);
+    font-family:var(--mono);font-size:11px;letter-spacing:.16em;padding:12px 18px;text-decoration:none;transition:top .15s}
+  .skip:focus{top:12px}
   a{color:inherit}
   img{display:block}
   a:focus-visible,button:focus-visible{outline:1.5px solid var(--accent);outline-offset:3px}
@@ -121,10 +125,12 @@
   /* ---------- header ---------- */
   header{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:24px;
     padding:18px 40px;background:rgba(11,10,9,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line-soft)}
-  .brand{font-family:var(--mono);font-weight:600;font-size:13px;letter-spacing:.22em;text-decoration:none;white-space:nowrap}
+  .brand{font-family:var(--mono);font-weight:600;font-size:13px;letter-spacing:.22em;text-decoration:none;white-space:nowrap;
+    display:inline-flex;align-items:center;min-height:44px;margin:-14px 0}
   .brand b{color:var(--accent)}
   nav{display:flex;flex-wrap:wrap;gap:26px;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em}
-  nav a{color:var(--muted);text-decoration:none;white-space:nowrap;transition:color .2s}
+  nav a{color:var(--muted);text-decoration:none;white-space:nowrap;transition:color .2s;
+    display:inline-flex;align-items:center;min-height:44px;padding:0 2px;margin:-15px 0}
   nav a:hover{color:var(--ink)}
   nav a i{font-style:normal;color:var(--accent);margin-right:6px}
   nav a.cur{color:var(--ink)}
@@ -139,7 +145,7 @@
   .cv{max-width:1000px}
   .cv-block{margin-bottom:46px}
   .cv-block:last-child{margin-bottom:0}
-  .cv-block h3{margin:0 0 14px;font-family:var(--mono);font-weight:600;font-size:12px;letter-spacing:.26em;color:var(--accent)}
+  .cv-block h3{margin:0 0 14px;font-family:var(--mono);font-weight:600;font-size:12px;letter-spacing:.26em;color:var(--accent-text)}
   .cv-row{display:grid;grid-template-columns:92px 1fr;gap:22px;padding:11px 8px;border-bottom:1px solid var(--line-soft);align-items:baseline;transition:background .35s}
   .cv-row:hover{background:rgba(237,230,216,.028)}
   .cv-row .y{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--muted);white-space:nowrap}
@@ -168,7 +174,7 @@
   .btn-ghost:hover{border-color:var(--ink);color:var(--ink)}
   .hero-sign{margin:52px 0 0;font-size:13px;line-height:1.9;letter-spacing:.1em;color:var(--muted);animation:fadeUp .8s .6s cubic-bezier(.2,.7,.2,1) both}
   .hero-next{margin:26px 0 0;font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;color:var(--ink-2);animation:fadeUp .8s .55s cubic-bezier(.2,.7,.2,1) both}
-  .hero-next i{font-style:normal;color:var(--accent);border:1px solid var(--accent);padding:3px 8px;margin-right:10px;font-size:10px;letter-spacing:.22em}
+  .hero-next i{font-style:normal;color:var(--accent-text);border:1px solid var(--accent-text);padding:3px 8px;margin-right:10px;font-size:10px;letter-spacing:.22em}
   .hero-sign b{color:var(--ink);font-size:15px}
   .hero-sign span{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em}
   .hero-fig{position:relative;z-index:1;margin:0;overflow:hidden;animation:fadeIn 1.2s .15s both}
@@ -213,7 +219,7 @@
     mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
   .marquee-track{display:flex;width:max-content;animation:marquee 46s linear infinite}
   .marquee-row{display:flex;gap:64px;padding:14px 32px;font-family:var(--mono);font-size:11px;letter-spacing:.26em;color:var(--muted);white-space:nowrap}
-  .marquee-row em{font-style:normal;color:var(--accent)}
+  .marquee-row em{font-style:normal;color:var(--accent-text)}
   .marquee-row b{color:var(--ink);font-weight:500}
 
   /* ---------- section head ---------- */
@@ -237,11 +243,23 @@
   .card figcaption b{font-size:13.5px;font-weight:700;letter-spacing:.12em;color:var(--ink)}
   .card figcaption span{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--muted);
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .45s}
-  .card:hover figcaption span{color:var(--accent)}
+  .card:hover figcaption span{color:var(--accent-text)}
   .col4{grid-column:span 4}
   .col2{grid-column:span 2}
   .h480 img{height:480px}
   .h420 img{height:420px}
+
+  /* ---------- press(掲載・記事) ---------- */
+  .press-list{display:flex;flex-direction:column}
+  .press-row{display:grid;grid-template-columns:110px 1fr auto;gap:24px;align-items:baseline;
+    padding:20px 8px;border-bottom:1px solid var(--line-soft);text-decoration:none;color:inherit;transition:background .35s}
+  .press-row:hover{background:rgba(237,230,216,.028)}
+  .press-row .d{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--muted);white-space:nowrap}
+  .press-row .t{font-size:15px;line-height:1.7;letter-spacing:.05em;color:var(--ink-2);text-wrap:pretty}
+  .press-row .o{display:block;margin-top:5px;font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--muted-2)}
+  .press-row .go{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--accent-text);white-space:nowrap}
+  .press-row:hover .t{color:var(--ink)}
+  @media (max-width:700px){ .press-row{grid-template-columns:1fr;gap:6px} .press-row .go{display:none} }
 
   /* ---------- exhibition(展示風景) ---------- */
   .exh-grid{display:grid;gap:26px}
@@ -253,7 +271,7 @@
 
   /* ---------- works: 出自ノート & ライトボックス ---------- */
   .works-note{margin:-26px 0 34px;font-family:var(--mono);font-size:10.5px;line-height:2;letter-spacing:.18em;color:var(--muted)}
-  .works-note b{color:var(--accent);font-weight:500}
+  .works-note b{color:var(--accent-text);font-weight:500}
   .card{cursor:pointer}
   .lb{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;
     background:rgba(11,10,9,.93);backdrop-filter:blur(10px)}
@@ -267,7 +285,7 @@
   .lb figcaption{display:flex;flex-wrap:wrap;gap:8px 26px;align-items:baseline;padding:18px 2px 0;justify-content:center}
   .lb .t{font-weight:700;font-size:17px;letter-spacing:.1em}
   .lb .m{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--muted)}
-  .lb .m b{color:var(--accent);font-weight:500}
+  .lb .m b{color:var(--accent-text);font-weight:500}
   .lb button{position:fixed;background:rgba(11,10,9,.6);border:1px solid var(--line);color:var(--muted);
     font-family:var(--mono);cursor:pointer;transition:color .2s,border-color .2s;display:grid;place-items:center}
   .lb button:hover{color:var(--ink);border-color:var(--ink)}
@@ -306,10 +324,10 @@
   .terminal{max-width:960px;margin:0 auto;background:var(--panel-2);border:1px solid rgba(237,230,216,.1)}
   .terminal .bar{display:flex;gap:16px;padding:12px 22px;border-bottom:1px solid rgba(237,230,216,.1);font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--muted)}
   .terminal p{margin:0;padding:38px 42px 44px;font-family:var(--sans);font-size:15px;line-height:2.5;letter-spacing:.08em;color:var(--ink-2);text-wrap:pretty}
-  .terminal i{font-family:var(--mono);font-size:13px}
+  .terminal i{font-family:var(--mono);font-size:13px;color:var(--accent-text)}
   .terminal i{font-style:normal;color:var(--accent)}
   .terminal b{color:var(--ink)}
-  .terminal em{font-style:normal;color:var(--accent)}
+  .terminal em{font-style:normal;color:var(--accent-text)}
   @media (max-width:700px){ .terminal p{padding:26px 20px 32px;font-size:13px} }
   .cursor{color:var(--accent);animation:blink 1.1s steps(1) infinite}
 
@@ -330,7 +348,7 @@
   /* ---------- contact ---------- */
   footer.contact{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:120px 40px 60px}
   footer.contact .big{margin:0;font-weight:900;font-size:clamp(56px,7vw,96px);letter-spacing:.14em;line-height:1}
-  footer.contact .mail{display:inline-block;margin-top:26px;font-family:var(--mono);font-size:15px;letter-spacing:.14em;color:var(--accent);text-decoration:underline;text-underline-offset:6px;transition:color .2s}
+  footer.contact .mail{display:inline-block;margin-top:26px;font-family:var(--mono);font-size:15px;letter-spacing:.14em;color:var(--accent-text);text-decoration:underline;text-underline-offset:6px;transition:color .2s}
   footer.contact .mail:hover{color:var(--ink)}
   footer.contact .desc{margin:34px 0 0;max-width:44em;font-size:13px;line-height:2.4;letter-spacing:.06em;color:var(--muted);text-wrap:pretty}
   footer.contact .credit{margin:22px 0 0;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--muted-2)}
@@ -384,6 +402,8 @@
   <div class="grid-bg" aria-hidden="true"></div>
   <div class="flicker" aria-hidden="true"></div>
 
+  <a class="skip" href="#works" data-en="Skip to content">本文へ移動</a>
+
   <!-- HEADER -->
   <header>
     <a href="#top" class="brand">ISEZAKI YOTARO_<b>/HAL/</b></a>
@@ -393,13 +413,14 @@
         <a href="#dna"><i>02</i>COLOR DNA</a>
         <a href="#exhibition" id="navExh" hidden><i>02</i>EXHIBITION</a><a href="#statement"><i>03</i>STATEMENT</a>
         <a href="#cv"><i>04</i>CV</a>
-        <a href="#profile"><i>05</i>PROFILE</a>
+        <a href="#press" id="navPress" hidden><i>04+</i>PRESS</a><a href="#profile"><i>05</i>PROFILE</a>
         <a href="#contact"><i>06</i>CONTACT</a>
       </nav>
       <button class="lang" id="langBtn" type="button" aria-label="Switch language / 言語切替"><b>EN</b></button>
     </div>
   </header>
 
+  <main id="content">
   <!-- 00 HERO -->
   <section id="top" class="hero" data-screen-label="00 HERO">
     <span class="hero-ghost" aria-hidden="true">/HAL/</span>
@@ -544,6 +565,12 @@
     </div>
   </section>
 
+  <!-- PRESS(掲載・記事) -->
+  <section id="press" class="block" data-screen-label="PRESS" hidden>
+    <div class="head"><span class="num">04+</span><h2 id="pressTitle">PRESS</h2><span class="note" id="pressNote">MEDIA &amp; ARTICLES</span></div>
+    <div id="pressList" class="press-list"></div>
+  </section>
+
   <!-- 05 PROFILE -->
   <section id="profile" class="block" data-screen-label="05 PROFILE">
     <div class="head" style="margin-bottom:24px"><span class="num">05</span><h2>PROFILE</h2><span class="note" id="profileHeadNote">DOSSIER — ISEZAKI_YOTARO</span></div>
@@ -556,6 +583,8 @@
       <div class="row"><dt>KILN</dt><dd data-en="Electric / wood kiln — 750°C, 7 HOURS">電気窯 / 薪窯 — 750°C, 7 HOURS</dd></div>
     </dl>
   </section>
+
+  </main>
 
   <!-- 06 CONTACT -->
   <footer id="contact" class="contact" data-screen-label="06 CONTACT">
@@ -725,6 +754,28 @@
         fig.addEventListener('click', function(){ lbOpen(mainSlide); });
         fig.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); lbOpen(mainSlide); } });
         grid.appendChild(fig);
+      });
+    })();
+
+    // ---- PRESS: 掲載・記事(admin.html で追加・編集可能) ----
+    (function(){
+      var list = (window.SITE && window.SITE.press) || [];
+      if (!list.length) return;
+      var sec = document.getElementById('press'), wrap = document.getElementById('pressList');
+      sec.hidden = false;
+      var nav = document.getElementById('navPress'); if (nav) nav.hidden = false;
+      list.forEach(function(p){
+        var a = document.createElement('a');
+        a.className = 'press-row';
+        a.href = p.url || '#';
+        if (p.url){ a.target = '_blank'; a.rel = 'noopener'; }
+        var d = document.createElement('span'); d.className = 'd'; d.textContent = p.date || '';
+        var t2 = document.createElement('span'); t2.className = 't'; t2.textContent = p.title || '';
+        if (p.outlet){ var o = document.createElement('span'); o.className = 'o'; o.textContent = p.outlet; t2.appendChild(o); }
+        var go = document.createElement('span'); go.className = 'go'; go.textContent = '↗';
+        a.setAttribute('aria-label', (p.title || '記事') + (p.outlet ? ' — ' + p.outlet : '') + '(新しいタブで開く)');
+        a.append(d, t2, go);
+        wrap.appendChild(a);
       });
     })();
 
