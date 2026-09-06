@@ -982,11 +982,15 @@
     // ---- scroll reveal ----
     if ('IntersectionObserver' in window) {
       document.documentElement.classList.add('js');
+      // threshold は「要素の何割が見えたか」なので、画面より高い要素には使えない。
+      // #worksGrid は約7000pxあり、画面が836px(=12%)未満の端末
+      // (Instagram等のアプリ内ブラウザ、iPhone SE など)では条件を永久に満たせず、
+      // WORKS が opacity:0 のまま表示されなかった。0 にして「見え始めたら表示」にする。
       var io = new IntersectionObserver(function(entries){
         entries.forEach(function(e){
           if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
         });
-      }, { threshold: .12, rootMargin: '0px 0px -6% 0px' });
+      }, { threshold: 0, rootMargin: '0px 0px -6% 0px' });
       // 単独要素は遅延なし、まとまって現れる行リストだけ時差をつける
       var solo = ['.head', '#worksGrid', '.dna-stage', '.dna > div:last-child', '.terminal'];
       var staggered = ['.exh', 'dl.profile .row'];
@@ -1003,6 +1007,26 @@
           io.observe(el);
         });
       });
+
+      // 保険: 演出(opacity:0)のせいでコンテンツが永久に隠れることがないよう、
+      // スクロール時に「画面に入っているのにまだ表示されていない要素」を必ず出す。
+      // IntersectionObserver が正常に動く環境では何もしない(見た目は変わらない)。
+      var sweep = function(){
+        var left = document.querySelectorAll('.reveal:not(.in)');
+        if (!left.length){ window.removeEventListener('scroll', onScrollSweep); return; }
+        for (var i = 0; i < left.length; i++){
+          var r = left[i].getBoundingClientRect();
+          if (r.top < window.innerHeight && r.bottom > 0){ left[i].classList.add('in'); io.unobserve(left[i]); }
+        }
+      };
+      var sweeping = false;
+      function onScrollSweep(){
+        if (sweeping) return;
+        sweeping = true;
+        requestAnimationFrame(function(){ sweeping = false; sweep(); });
+      }
+      window.addEventListener('scroll', onScrollSweep, { passive: true });
+      setTimeout(sweep, 1200); // 初期表示ぶんの取りこぼしも拾う
     }
 
     // ---- 言語切替 (JP / EN) ----
