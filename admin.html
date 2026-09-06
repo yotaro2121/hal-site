@@ -434,9 +434,58 @@ function readAsDataURL(fileOrBlob){
   return new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(fileOrBlob); });
 }
 
-// 写真を縮小してJPEG保存。opts: {max, quality, fixedPath} fixedPath指定時はその場所に上書き
+// 指定パスにblobを保存(サーバーモード / フォルダ選択モードの両対応)
+async function saveBlob(path, blob){
+  if (serverMode) {
+    const dataUrl = await readAsDataURL(blob);
+    const resp = await (await fetch('/api/image', { method: 'POST', body: JSON.stringify({ path, dataUrl }) })).json();
+    if (!resp.ok) throw new Error(resp.error || '保存エラー');
+  } else {
+    let dir = root;
+    const parts = path.split('/');
+    for (const p of parts.slice(0, -1)) dir = await dir.getDirectoryHandle(p, { create: true });
+    const fh = await dir.getFileHandle(parts.at(-1), { create: true });
+    const wr = await fh.createWritable();
+    await wr.write(blob);
+    await wr.close();
+  }
+}
+
+// 画像を指定幅に縮小して書き出す。WebP非対応ブラウザでは false を返す。
+async function saveResized(bmp, outPath, maxW, fmt, quality){
+  const scale = Math.min(1, maxW / bmp.width);
+  const c = document.createElement('canvas');
+  c.width = Math.round(bmp.width * scale);
+  c.height = Math.round(bmp.height * scale);
+  c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+  const b = await new Promise(res => c.toBlob(res, fmt, quality));
+  if (!b || b.type !== fmt) return false;
+  await saveBlob(outPath, b);
+  return true;
+}
+
+// 保存したJPEGから、サイト表示用のWebPを同名で書き出す。
+// index.html は .jpg 参照のまま同名 .webp を優先して読むので、
+// ここがズレると差し替え後に古い画像が出てしまう。必ずJPEGと同時に更新する。
+async function saveDerivatives(jpgPath, jpgBlob, o){
+  const bmp = await createImageBitmap(jpgBlob);
+  const ok = await saveResized(bmp, jpgPath.replace(/\.(jpe?g|png)$/i, '.webp'), 1600, 'image/webp', .8);
+  if (!ok) throw new Error('このブラウザはWebPを書き出せません(Safari 14以降 / Chrome をお使いください)');
+  // ヒーローは index.html の srcset に合わせて幅違いも書き出す
+  for (const w of (o.heroWidths || [])) {
+    await saveResized(bmp, jpgPath.replace(/\.jpe?g$/i, '-' + w + '.webp'), w, 'image/webp', .8);
+  }
+  // DNAチップ(64px表示)用の軽量サムネ
+  if (o.chipThumb) {
+    const base = jpgPath.split('/').pop().replace(/\.[^.]+$/, '');
+    await saveResized(bmp, 'assets/thumbs/' + base + '-192.jpg', 192, 'image/jpeg', .8);
+  }
+}
+
+// 写真を縮小してJPEG保存。opts: {max, quality, fixedPath, heroWidths, chipThumb}
+// fixedPath指定時はその場所に上書き。表示用のWebPも同時に書き出す。
 async function importImage(file, opts){
-  const o = Object.assign({ max: 1600, quality: .82, fixedPath: null }, opts);
+  const o = Object.assign({ max: 1600, quality: .82, fixedPath: null, heroWidths: null, chipThumb: false }, opts);
   try {
     status('画像を取り込み中…');
     let blob;
@@ -466,19 +515,9 @@ async function importImage(file, opts){
         .replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40) || 'work';
       path = 'assets/works/' + base + '-' + Date.now().toString(36) + '.jpg';
     }
-    if (serverMode) {
-      const dataUrl = await readAsDataURL(blob);
-      const resp = await (await fetch('/api/image', { method: 'POST', body: JSON.stringify({ path, dataUrl }) })).json();
-      if (!resp.ok) throw new Error(resp.error || '保存エラー');
-    } else {
-      let dir = root;
-      const parts = path.split('/');
-      for (const p of parts.slice(0, -1)) dir = await dir.getDirectoryHandle(p, { create: true });
-      const fh = await dir.getFileHandle(parts.at(-1), { create: true });
-      const wr = await fh.createWritable();
-      await wr.write(blob);
-      await wr.close();
-    }
+    await saveBlob(path, blob);
+    status('表示用のWebPを書き出し中…');
+    await saveDerivatives(path, blob, o);
     status('画像を取り込みました', 'ok');
     return path;
   } catch (e) {
@@ -528,7 +567,7 @@ function renderHero(){
   };
 }
 async function replaceHero(files){
-  const path = await importImage(files[0], { max: 2400, quality: .85, fixedPath: 'assets/hero-2x.jpg' });
+  const path = await importImage(files[0], { max: 2400, quality: .85, fixedPath: 'assets/hero-2x.jpg', heroWidths: [800, 1200] });
   if (path){ renderHero(); markDirty(); $('savenote').textContent = 'ヒーロー画像を差し替えました — 保存を押してください'; }
 }
 bindDrop($('heroRow'), replaceHero);
@@ -680,7 +719,7 @@ function renderDna(){
     fields.appendChild(pair);
     fields.appendChild(mkRange('表示位置(上↔下)', posPct(d.pos), v => { d.pos = 'center ' + v + '%'; img.style.objectPosition = d.pos; }));
     const replaceDnaImg = async files => {
-      const path = await importImage(files[0]);
+      const path = await importImage(files[0], { chipThumb: true });
       if (path){ d.img = path; markDirty(); renderDna(); }
     };
     bindDrop(row, replaceDnaImg);

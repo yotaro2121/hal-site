@@ -32,7 +32,9 @@
 }
 </script>
 <link rel="preload" href="assets/fonts/zen-kaku-900-hero-subset.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="assets/hero-2x.jpg" as="image" fetchpriority="high">
+<link rel="preload" as="image" type="image/webp" fetchpriority="high"
+      imagesrcset="assets/hero-2x-800.webp 800w, assets/hero-2x-1200.webp 1200w, assets/hero-2x.webp 1600w"
+      imagesizes="(max-width:860px) 100vw, 54vw">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -86,6 +88,8 @@
   img{display:block}
   a:focus-visible,button:focus-visible{outline:1.5px solid var(--accent);outline-offset:3px}
   section.block,.hero{scroll-margin-top:64px}
+  /* WebP配信用の<picture>はレイアウトに影響させない(既存の .card img / .dna-stage img 等をそのまま効かせる) */
+  picture{display:contents}
 
   /* ---------- scroll reveal(JS有効時のみ隠す) ---------- */
   html.js .reveal{opacity:0;transform:translateY(22px);
@@ -435,7 +439,12 @@
       <p class="hero-sign" id="heroSign"><b>伊勢崎 陽太郎</b><br><span>ISEZAKI YOTARO — CERAMIC ARTIST / TAJIMI, JP</span></p>
     </div>
     <figure class="hero-fig">
-      <img src="assets/hero-2x.jpg" width="1601" height="2400" fetchpriority="high" decoding="async" alt="HAL — AI生成キャラクターを転写・焼成した壺">
+      <picture>
+        <source type="image/webp"
+                srcset="assets/hero-2x-800.webp 800w, assets/hero-2x-1200.webp 1200w, assets/hero-2x.webp 1600w"
+                sizes="(max-width:860px) 100vw, 54vw">
+        <img src="assets/hero-2x.jpg" width="1601" height="2400" fetchpriority="high" decoding="async" alt="HAL — AI生成キャラクターを転写・焼成した壺">
+      </picture>
       <div class="grade" aria-hidden="true"></div>
       <figcaption id="heroCap">壺 <s>— HAL</s><br>750°C / 7H — <b>REGEN: DISABLED</b></figcaption>
     </figure>
@@ -452,10 +461,10 @@
   <!-- CINEMATIC REEL(スクロールで再生する壺) -->
   <section class="reel" id="reel" aria-label="窯の中の壺" data-screen-label="REEL">
     <div class="reel-sticky">
-      <video id="reelVideo" muted loop playsinline preload="auto" poster="assets/hal-turn-poster.jpg" aria-hidden="true">
+      <video id="reelVideo" muted loop playsinline preload="metadata" poster="assets/hal-turn-poster.jpg" aria-hidden="true">
         <source src="assets/hal-turn.mp4" type="video/mp4">
       </video>
-      <img class="poster" id="reelPoster" src="assets/hal-turn-poster.jpg" alt="窯変した壺" hidden>
+      <img class="poster" id="reelPoster" src="assets/hal-turn-poster.jpg" alt="窯変した壺" loading="lazy" decoding="async" hidden>
       <div class="scan" aria-hidden="true"></div>
       <div class="veil" aria-hidden="true"></div>
       <div class="reel-copy" id="reelCopy">
@@ -478,7 +487,10 @@
     <div class="head"><span class="num">02</span><h2 id="dnaTitle">COLOR DNA</h2><span class="note" id="dnaNote">HALの人格は、色で分岐する</span></div>
     <div class="dna">
       <div class="dna-stage">
-        <img loading="lazy" decoding="async" width="1001" height="1500" id="dnaImg" src="assets/isezaki_IY_28_2.jpg" alt="HAL 赤">
+        <picture>
+          <source id="dnaSrc" type="image/webp" srcset="assets/isezaki_IY_28_2.webp">
+          <img loading="lazy" decoding="async" width="1001" height="1500" id="dnaImg" src="assets/isezaki_IY_28_2.jpg" alt="HAL 赤">
+        </picture>
         <span class="code" id="dnaStageCode">SPECIMEN // HAL_01 / 緋</span>
       </div>
       <div>
@@ -602,7 +614,10 @@
   <!-- LIGHTBOX(作品拡大) -->
   <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="作品の拡大表示">
     <figure>
-      <img id="lbImg" alt="">
+      <picture>
+        <source id="lbSrc" type="image/webp">
+        <img id="lbImg" loading="lazy" decoding="async" alt="">
+      </picture>
       <figcaption><span class="t" id="lbTitle"></span><span class="m" id="lbMeta"></span></figcaption>
     </figure>
     <button class="x" id="lbClose" aria-label="閉じる">✕</button>
@@ -612,6 +627,65 @@
 
   <script src="assets/works-data.js?v=3"></script>
   <script>
+    // ---- 画像配信ヘルパー ------------------------------------------------
+    // works-data.js 側の参照は .jpg のまま(admin.html との互換を保つ)。
+    // 表示時に同名 .webp を <picture> の <source> として優先し、
+    // WebP非対応ブラウザや .webp が無い場合は <img> の JPEG に自動で戻る。
+    function webpFor(path){ return String(path || '').replace(/\.(jpe?g|png)$/i, '.webp'); }
+
+    // <source> の WebP が 404 等で読めなかったときに JPEG で読み直す保険
+    function picGuard(img){
+      img.addEventListener('error', function onerr(){
+        img.removeEventListener('error', onerr);
+        var pic = img.parentNode;
+        if (!pic || pic.tagName !== 'PICTURE') return;
+        var s = pic.querySelector('source');
+        if (!s) return;
+        pic.removeChild(s);
+        var jpg = img.getAttribute('src');
+        img.removeAttribute('src'); img.setAttribute('src', jpg); // JPEGで再取得
+      });
+    }
+
+    // JPEGパスから <picture><source webp><img jpeg></picture> を組み立てる
+    function makePicture(path){
+      var pic = document.createElement('picture');
+      var src = document.createElement('source');
+      src.type = 'image/webp';
+      src.srcset = webpFor(path);
+      var img = document.createElement('img');
+      img.src = path;
+      picGuard(img);
+      pic.appendChild(src); pic.appendChild(img);
+      return { pic: pic, img: img };
+    }
+
+    // 既存の <picture> の参照先を差し替える(DNA / ライトボックス)
+    function setPicture(srcEl, imgEl, path){
+      if (srcEl) srcEl.srcset = webpFor(path);
+      imgEl.src = path;
+    }
+
+    // DNAチップは64px表示。原寸(約180KB×5=866KB)ではなく192pxサムネを使う。
+    // サムネが無い画像(admin.html で差し替えた直後など)は原寸にフォールバック。
+    // COLOR DNA が非表示(html.no-dna)のときは1枚も取得しないよう、
+    // 実際に画面に入ってから読み込む(display:none の要素は交差しない)。
+    function chipBg(el, path){
+      var thumb = 'assets/thumbs/' + path.split('/').pop().replace(/\.[^.]+$/, '') + '-192.jpg';
+      function load(){
+        var probe = new Image();
+        probe.onload  = function(){ el.style.backgroundImage = 'url("' + thumb + '")'; };
+        probe.onerror = function(){ el.style.backgroundImage = 'url("' + path  + '")'; };
+        probe.src = thumb;
+      }
+      if ('IntersectionObserver' in window){
+        var io = new IntersectionObserver(function(es){
+          es.forEach(function(e){ if (e.isIntersecting){ io.disconnect(); load(); } });
+        }, { rootMargin: '200px' });
+        io.observe(el);
+      } else { load(); }
+    }
+
     // ---- STATEMENT / CV: assets/site-text.js から描画(admin.html で編集可能) ----
     // site-text.js が読めない場合は HTML に書かれた既存の内容がそのまま残る
     (function(){
@@ -738,8 +812,8 @@
         fig.tabIndex = 0;
         fig.setAttribute('role', 'button');
         fig.setAttribute('aria-label', w.title + ' を拡大表示');
-        var img = document.createElement('img');
-        img.src = w.img;
+        var pic = makePicture(w.img);
+        var img = pic.img;
         img.alt = 'HAL — ' + w.title;
         img.loading = 'lazy';
         img.decoding = 'async';
@@ -750,7 +824,7 @@
         var span = document.createElement('span');
         span.textContent = (w.year ? w.year + ' — ' : '') + (w.cap || 'FIRED');
         cap.appendChild(b); cap.appendChild(span);
-        fig.appendChild(img); fig.appendChild(cap);
+        fig.appendChild(pic.pic); fig.appendChild(cap);
         fig.addEventListener('click', function(){ lbOpen(mainSlide); });
         fig.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); lbOpen(mainSlide); } });
         grid.appendChild(fig);
@@ -789,15 +863,16 @@
       list.forEach(function(e){
         var fig = document.createElement('figure');
         fig.className = 'exh-shot';
-        var img = document.createElement('img');
-        img.src = e.img; img.loading = 'lazy'; img.decoding = 'async';
+        var pic = makePicture(e.img);
+        var img = pic.img;
+        img.loading = 'lazy'; img.decoding = 'async';
         img.alt = (e.title || '展示風景') + (e.venue ? ' — ' + e.venue : '');
         if (e.pos) img.style.objectPosition = e.pos;
         var cap = document.createElement('figcaption');
         if (e.title){ var t1 = document.createElement('span'); t1.className = 't'; t1.textContent = e.title; cap.appendChild(t1); }
         var meta = [e.venue, e.year].filter(Boolean).join('  /  ');
         if (meta){ var m = document.createElement('span'); m.className = 'm'; m.textContent = meta; cap.appendChild(m); }
-        fig.appendChild(img);
+        fig.appendChild(pic.pic);
         if (cap.childNodes.length) fig.appendChild(cap);
         grid.appendChild(fig);
       });
@@ -805,12 +880,14 @@
 
     // ---- LIGHTBOX ----
     var lb = document.getElementById('lb'), lbImg = document.getElementById('lbImg'),
+        lbSrc = document.getElementById('lbSrc'),
         lbTitle = document.getElementById('lbTitle'), lbMeta = document.getElementById('lbMeta'),
         lbIndex = 0;
+    picGuard(lbImg);
     function lbShow(i){
       lbIndex = (i + LB_SLIDES.length) % LB_SLIDES.length;
       var s = LB_SLIDES[lbIndex], w = s.w;
-      lbImg.src = s.img;
+      setPicture(lbSrc, lbImg, s.img);
       lbImg.alt = 'HAL — ' + w.title + (s.label ? '(' + s.label + ')' : '');
       lbTitle.textContent = w.title;
       var meta = [];
@@ -863,6 +940,8 @@
       { kanji:'黄', code:'HAL_05 / 燿', img:'assets/isezaki_IY_30_2.jpg', color:'#C9A227', pos:'center 45%' }
     ];
     var img = document.getElementById('dnaImg');
+    var dnaSrc = document.getElementById('dnaSrc');
+    picGuard(img);
     var kanji = document.getElementById('dnaKanji');
     var code = document.getElementById('dnaCode');
     var stageCode = document.getElementById('dnaStageCode');
@@ -870,7 +949,7 @@
 
     function select(i){
       var d = DNA[i];
-      img.src = d.img;
+      setPicture(dnaSrc, img, d.img);
       img.alt = 'HAL ' + d.kanji;
       img.style.objectPosition = d.pos;
       img.style.animation = 'none';
@@ -887,7 +966,7 @@
       var b = document.createElement('button');
       b.className = 'chip' + (i === 0 ? ' active' : '');
       b.setAttribute('aria-label', d.kanji);
-      b.style.backgroundImage = 'url(' + d.img + ')';
+      chipBg(b, d.img);
       b.addEventListener('click', function(){ select(i); });
       chipsEl.appendChild(b);
     });
@@ -895,7 +974,7 @@
     // 初期表示を DNA[0] に同期(アニメーションなしの静的セット)
     (function(){
       var d = DNA[0];
-      img.src = d.img; img.alt = 'HAL ' + d.kanji; img.style.objectPosition = d.pos || 'center 50%';
+      setPicture(dnaSrc, img, d.img); img.alt = 'HAL ' + d.kanji; img.style.objectPosition = d.pos || 'center 50%';
       kanji.textContent = d.kanji; kanji.style.color = d.color;
       code.textContent = d.code; stageCode.textContent = 'SPECIMEN // ' + d.code;
     })();
@@ -903,11 +982,15 @@
     // ---- scroll reveal ----
     if ('IntersectionObserver' in window) {
       document.documentElement.classList.add('js');
+      // threshold は「要素の何割が見えたか」なので、画面より高い要素には使えない。
+      // #worksGrid は約7000pxあり、画面が836px(=12%)未満の端末
+      // (Instagram等のアプリ内ブラウザ、iPhone SE など)では条件を永久に満たせず、
+      // WORKS が opacity:0 のまま表示されなかった。0 にして「見え始めたら表示」にする。
       var io = new IntersectionObserver(function(entries){
         entries.forEach(function(e){
           if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
         });
-      }, { threshold: .12, rootMargin: '0px 0px -6% 0px' });
+      }, { threshold: 0, rootMargin: '0px 0px -6% 0px' });
       // 単独要素は遅延なし、まとまって現れる行リストだけ時差をつける
       var solo = ['.head', '#worksGrid', '.dna-stage', '.dna > div:last-child', '.terminal'];
       var staggered = ['.exh', 'dl.profile .row'];
@@ -924,6 +1007,26 @@
           io.observe(el);
         });
       });
+
+      // 保険: 演出(opacity:0)のせいでコンテンツが永久に隠れることがないよう、
+      // スクロール時に「画面に入っているのにまだ表示されていない要素」を必ず出す。
+      // IntersectionObserver が正常に動く環境では何もしない(見た目は変わらない)。
+      var sweep = function(){
+        var left = document.querySelectorAll('.reveal:not(.in)');
+        if (!left.length){ window.removeEventListener('scroll', onScrollSweep); return; }
+        for (var i = 0; i < left.length; i++){
+          var r = left[i].getBoundingClientRect();
+          if (r.top < window.innerHeight && r.bottom > 0){ left[i].classList.add('in'); io.unobserve(left[i]); }
+        }
+      };
+      var sweeping = false;
+      function onScrollSweep(){
+        if (sweeping) return;
+        sweeping = true;
+        requestAnimationFrame(function(){ sweeping = false; sweep(); });
+      }
+      window.addEventListener('scroll', onScrollSweep, { passive: true });
+      setTimeout(sweep, 1200); // 初期表示ぶんの取りこぼしも拾う
     }
 
     // ---- 言語切替 (JP / EN) ----
@@ -1085,7 +1188,17 @@
           if (e.isIntersecting){
             startObs.disconnect();
             var go = function(){ startLoop(); probeScrub(); };
-            if (vid.readyState >= 2) go(); else vid.addEventListener('canplay', go, { once: true });
+            if (vid.readyState >= 2) { go(); }
+            else {
+              // preload="metadata" なので本体はまだ未取得。ここで初めて取得を始める。
+              vid.preload = 'auto';
+              startLoop(); // play() 自体がバッファリングを促す(canplay 前に呼んでも安全)
+              // canplay を待たず、データが届いた時点(loadeddata)でも scrub 判定に進む
+              var started = false;
+              var kick = function(){ if (started) return; started = true; go(); };
+              vid.addEventListener('loadeddata', kick, { once: true });
+              vid.addEventListener('canplay', kick, { once: true });
+            }
           }
         });
       }, { threshold: .01 });
