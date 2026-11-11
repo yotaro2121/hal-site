@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="google" content="notranslate">
+<link rel="canonical" href="https://yotaro2121.github.io/hal-site/">
 <title>ISEZAKI YOTARO — /HAL/ IMAGES, FIRED</title>
 <meta name="description" content="画像を、焼く。陶芸家・伊勢崎陽太郎 /HAL/。AIが生成したイメージとカメラロールの写真を、伝統的な日本陶芸の形式に焼き付ける。AIのプロセスも陶芸の焼成も人の制御を超える——そのズレを一点ごとの差異として受け止める。">
 <meta name="theme-color" content="#0B0A09">
@@ -133,6 +134,7 @@
     display:inline-flex;align-items:center;min-height:44px;margin:-14px 0}
   .brand b{color:var(--accent)}
   nav{display:flex;flex-wrap:wrap;gap:26px;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em}
+  nav a[hidden]{display:none}
   nav a{color:var(--muted);text-decoration:none;white-space:nowrap;transition:color .2s;
     display:inline-flex;align-items:center;min-height:44px;padding:0 2px;margin:-15px 0}
   nav a:hover{color:var(--ink)}
@@ -147,6 +149,7 @@
 
   /* ---------- CV ---------- */
   .cv{max-width:1000px}
+  nav a[hidden]{display:none!important}
   .cv-block{margin-bottom:46px}
   .cv-block:last-child{margin-bottom:0}
   .cv-block h3{margin:0 0 14px;font-family:var(--mono);font-weight:600;font-size:12px;letter-spacing:.26em;color:var(--accent-text)}
@@ -161,7 +164,7 @@
   }
 
   /* ---------- hero ---------- */
-  .hero{position:relative;z-index:1;display:grid;grid-template-columns:minmax(340px,46fr) minmax(320px,54fr);min-height:calc(100vh - 60px)}
+  .hero{position:relative;z-index:1;overflow-x:clip;display:grid;grid-template-columns:minmax(340px,46fr) minmax(320px,54fr);min-height:calc(100vh - 60px)}
   .hero-ghost{position:absolute;left:-20px;bottom:-40px;z-index:0;font-weight:900;font-size:clamp(160px,24vw,330px);
     letter-spacing:.02em;color:transparent;-webkit-text-stroke:1px rgba(237,230,216,.055);pointer-events:none;line-height:1}
   .hero-copy{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;padding:72px 48px 72px 56px}
@@ -294,6 +297,7 @@
     font-family:var(--mono);cursor:pointer;transition:color .2s,border-color .2s;display:grid;place-items:center}
   .lb button:hover{color:var(--ink);border-color:var(--ink)}
   .lb .x{top:20px;right:20px;width:46px;height:46px;font-size:15px}
+  .lb .lb-link{position:static;display:inline-block;padding:9px 14px;font-size:10px;letter-spacing:.22em}
   .lb .prev,.lb .next{top:50%;transform:translateY(-50%);width:44px;height:68px;font-size:17px}
   .lb .prev{left:14px}
   .lb .next{right:14px}
@@ -382,6 +386,9 @@
     .hero-cta{margin-top:30px}
     .hero-sign{margin-top:36px}
     section.block{padding:64px 20px}
+    .head{flex-wrap:wrap;row-gap:8px}
+    .head h2{font-size:28px;letter-spacing:.22em}
+    footer.contact .big{font-size:clamp(38px,12vw,56px)}
     .works-grid{grid-template-columns:repeat(2,1fr)}
     .col4,.col2{grid-column:span 2}
     .dna-stage{height:min(88vw,480px)}
@@ -618,7 +625,7 @@
         <source id="lbSrc" type="image/webp">
         <img id="lbImg" loading="lazy" decoding="async" alt="">
       </picture>
-      <figcaption><span class="t" id="lbTitle"></span><span class="m" id="lbMeta"></span></figcaption>
+      <figcaption><span class="t" id="lbTitle"></span><span class="m" id="lbMeta"></span><button type="button" class="lb-link" id="lbLink" aria-label="この作品のリンクをコピー">LINK</button></figcaption>
     </figure>
     <button class="x" id="lbClose" aria-label="閉じる">✕</button>
     <button class="prev" id="lbPrev" aria-label="前の作品">←</button>
@@ -884,6 +891,8 @@
         lbTitle = document.getElementById('lbTitle'), lbMeta = document.getElementById('lbMeta'),
         lbIndex = 0;
     picGuard(lbImg);
+    // 作品ごとの固定ID(画像ファイル名から作る。並べ替えても変わらない)
+    function workId(w){ return (w.img || '').split('/').pop().replace(/\.[^.]+$/, ''); }
     function lbShow(i){
       lbIndex = (i + LB_SLIDES.length) % LB_SLIDES.length;
       var s = LB_SLIDES[lbIndex], w = s.w;
@@ -901,9 +910,12 @@
         if (mi){ var sep = document.createElement('b'); sep.textContent = ' / '; lbMeta.appendChild(sep); }
         lbMeta.appendChild(document.createTextNode(m));
       });
+      // 開いている作品をURLに反映(このURLを送ると、その作品が開いた状態で表示される)
+      try { history.replaceState(null, '', '#work/' + encodeURIComponent(workId(w))); } catch(e){}
     }
     function lbOpen(i){ lbShow(i); lb.classList.add('open'); document.body.style.overflow = 'hidden'; document.getElementById('lbClose').focus(); }
-    function lbCloseFn(){ lb.classList.remove('open'); document.body.style.overflow = ''; }
+    function lbCloseFn(){ lb.classList.remove('open'); document.body.style.overflow = '';
+      try { history.replaceState(null, '', location.pathname + location.search); } catch(e){} }
     document.getElementById('lbClose').addEventListener('click', lbCloseFn);
     document.getElementById('lbPrev').addEventListener('click', function(){ lbShow(lbIndex - 1); });
     document.getElementById('lbNext').addEventListener('click', function(){ lbShow(lbIndex + 1); });
@@ -923,6 +935,33 @@
       if (Math.abs(dx) > 48) lbShow(lbIndex + (dx < 0 ? 1 : -1));
       lbTouchX = null;
     }, { passive: true });
+
+    // 「LINK」ボタン: この作品のURLをコピー
+    (function(){
+      var b = document.getElementById('lbLink');
+      b.addEventListener('click', function(){
+        var url = location.href;
+        var done = function(){ b.textContent = 'COPIED'; setTimeout(function(){ b.textContent = 'LINK'; }, 1600); };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, function(){ prompt('URL', url); });
+        else prompt('URL', url);
+      });
+    })();
+    // 作品リンク(#work/◯◯)で開かれたら、その作品を拡大表示で開く
+    function openFromHash(){
+      var m = location.hash.match(/^#work\/(.+)$/);
+      if (!m) return;
+      var id = decodeURIComponent(m[1]);
+      for (var i = 0; i < LB_SLIDES.length; i++){
+        if (!LB_SLIDES[i].label && workId(LB_SLIDES[i].w) === id){
+          var sec = document.getElementById('works');
+          if (sec) sec.scrollIntoView();
+          lbOpen(i);
+          break;
+        }
+      }
+    }
+    openFromHash();
+    window.addEventListener('hashchange', openFromHash);
 
     // ---- HERO: 表示位置を works-data.js から適用(admin.html で調整可能) ----
     if (window.SITE && window.SITE.hero && window.SITE.hero.pos) {
